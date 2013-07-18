@@ -1,14 +1,137 @@
+/****************************************************************************
+**
+** Copyright (C) 2013 tdzl2003.
+** Contact: http://www.qt-project.org/legal
+**
+** This file is part of the tools applications of the LuaQt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL$
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
 #include "mocreader.h"
 #include <lua.hpp>
+#include "preprocessor.h"
 
-static int foo(lua_State *L)
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qdir.h>
+
+static inline bool hasNext(const Symbols &symbols, int i)
+{ return (i < symbols.size()); }
+
+static inline const Symbol &next(const Symbols &symbols, int &i)
+{ return symbols.at(i++); }
+
+QByteArray composePreprocessorOutput(const Symbols &symbols) {
+    QByteArray output;
+    int lineNum = 1;
+    Token last = PP_NOTOKEN;
+    Token secondlast = last;
+    int i = 0;
+    while (hasNext(symbols, i)) {
+        Symbol sym = next(symbols, i);
+        switch (sym.token) {
+        case PP_NEWLINE:
+        case PP_WHITESPACE:
+            if (last != PP_WHITESPACE) {
+                secondlast = last;
+                last = PP_WHITESPACE;
+                output += ' ';
+            }
+            continue;
+        case PP_STRING_LITERAL:
+            if (last == PP_STRING_LITERAL)
+                output.chop(1);
+            else if (secondlast == PP_STRING_LITERAL && last == PP_WHITESPACE)
+                output.chop(2);
+            else
+                break;
+            output += sym.lexem().mid(1);
+            secondlast = last;
+            last = PP_STRING_LITERAL;
+            continue;
+        case MOC_INCLUDE_BEGIN:
+            lineNum = 0;
+            continue;
+        case MOC_INCLUDE_END:
+            lineNum = sym.lineNum;
+            continue;
+        default:
+            break;
+        }
+        secondlast = last;
+        last = sym.token;
+
+        const int padding = sym.lineNum - lineNum;
+        if (padding > 0) {
+            output.resize(output.size() + padding);
+            memset(output.data() + output.size() - padding, '\n', padding);
+            lineNum = sym.lineNum;
+        }
+
+        output += sym.lexem();
+    }
+
+    return output;
+}
+
+static int mocreader_preprocess(lua_State *L)
 {
-	lua_pushliteral(L, "bar");
+	Preprocessor pp;
+	pp.macros["Q_MOC_RUN"];
+    pp.macros["__cplusplus"];
+
+	//TODO: define macros from parameters.
+
+	Macro dummyVariadicFunctionMacro;
+    dummyVariadicFunctionMacro.isFunction = true;
+    dummyVariadicFunctionMacro.isVariadic = true;
+    dummyVariadicFunctionMacro.arguments += Symbol(0, PP_IDENTIFIER, "__VA_ARGS__");
+
+	pp.macros["__attribute__"] = dummyVariadicFunctionMacro;
+
+	QByteArray filename = luaL_checkstring(L, 1);
+    QByteArray output;
+	FILE *in = 0;
+    FILE *out = 0;
+
+	bool autoInclude = true;
+    bool defaultInclude = true;
+
+	//TODO: options:
+	// prepend include files -b
+	// force include -f
+	// include file path -I
+	// path prefix -p
+	// no warning
+	// no noting
+	// Mac framework support
+
+	in = fopen(filename.data(), "rb");
+	if (!in) {
+        luaL_error(L, "moc: %s: No such file\n", filename.constData());
+    }
+
+	Symbols sym = pp.preprocessed(filename, in);
+	lua_pushstring(L, composePreprocessorOutput(sym).constData());
+
 	return 1;
 }
 
 static luaL_Reg entries[] = {
-	{"foo", foo},
+	{"preprocess", mocreader_preprocess},
+	//TODO: version number
 };
 
 inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
