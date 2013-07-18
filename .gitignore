@@ -1,0 +1,4 @@
+*.opensdf
+/modules/mocreader/build/msvc2012/mocreader/*.sdf
+/modules/mocreader/build/msvc2012/mocreader/*.suo
+/modules/mocreader/build/msvc2012/mocreader/*.user
