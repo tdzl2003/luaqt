@@ -1182,14 +1182,19 @@ Symbols Preprocessor::preprocessed(const QByteArray &filename, FILE *file)
 Symbols Preprocessor::preprocessed(const QByteArray &filename, QIODevice *file)
 {
     QByteArray input = file->readAll();
+	return preprocessed(filename, input);
+}
+
+Symbols Preprocessor::preprocessed(const QByteArray &filename, const QByteArray& input)
+{
     if (input.isEmpty())
         return symbols;
 
     // phase 1: get rid of backslash-newlines
-    input = cleaned(input);
+    QByteArray cinput = cleaned(input);
 
     // phase 2: tokenize for the preprocessor
-    symbols = tokenize(input);
+    symbols = tokenize(cinput);
 
 #if 0
     for (int j = 0; j < symbols.size(); ++j)

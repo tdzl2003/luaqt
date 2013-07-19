@@ -77,6 +77,7 @@ public:
     Macros macros;
     Symbols preprocessed(const QByteArray &filename, FILE *file);
     Symbols preprocessed(const QByteArray &filename, QIODevice *device);
+	Symbols preprocessed(const QByteArray &filename, const QByteArray& data);
 
     void parseDefineArguments(Macro *m);
 

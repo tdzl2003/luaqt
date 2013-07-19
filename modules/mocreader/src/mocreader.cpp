@@ -112,16 +112,37 @@ static int mocreader_preprocess(lua_State *L)
 	//TODO: options:
 	// prepend include files -b
 	// force include -f
-	// include file path -I
 	// path prefix -p
 	// no warning
 	// no noting
 	// Mac framework support
 
+	// parse args
+	if (lua_istable(L, 2)){
+		lua_getfield(L, 2, "includePath");
+		if (lua_istable(L, -1)){
+			int len = lua_objlen(L, -1);
+			for (int i = 0; i < len; ++i)
+			{
+				lua_rawgeti(L, -1, i+1);
+				if (!lua_isstring(L, -1))
+				{
+					luaL_error(L, "includePath must be a table of string.");
+				}
+				pp.includes += Preprocessor::IncludePath(lua_tostring(L, -1));
+				lua_pop(L, 1);
+			}
+		}
+		lua_pop(L, 1);
+
+	}
+
 	in = fopen(filename.data(), "rb");
 	if (!in) {
         luaL_error(L, "moc: %s: No such file\n", filename.constData());
     }
+
+	pp.preprocessOnly = true;
 
 	Symbols sym = pp.preprocessed(filename, in);
 	lua_pushstring(L, composePreprocessorOutput(sym).constData());
