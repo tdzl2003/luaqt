@@ -53,6 +53,12 @@
     <ClInclude Include="..\..\..\src\symbols.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\mocparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\moc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\mocreader.cpp">
@@ -64,25 +70,17 @@
     <ClCompile Include="..\..\..\src\parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_token.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_token.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\..\src\token.cpp">
+    <ClCompile Include="..\..\..\src\mocparser.cpp">
       <Filter>Source Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\Debug\token.moc">
-      <Filter>Generated Files\Debug</Filter>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\Release\token.moc">
-      <Filter>Generated Files\Release</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\..\src\token.h">
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\moc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\token.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\token.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
+    </ClCompile>
   </ItemGroup>
 </Project>

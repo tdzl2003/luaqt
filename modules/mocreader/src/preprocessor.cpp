@@ -1275,3 +1275,63 @@ void Preprocessor::until(Token t)
 }
 
 QT_END_NAMESPACE
+
+static inline bool hasNext(const Symbols &symbols, int i)
+{ return (i < symbols.size()); }
+
+static inline const Symbol &next(const Symbols &symbols, int &i)
+{ return symbols.at(i++); }
+
+QByteArray composePreprocessorOutput(const Symbols &symbols)
+{
+    QByteArray output;
+    int lineNum = 1;
+    Token last = PP_NOTOKEN;
+    Token secondlast = last;
+    int i = 0;
+    while (hasNext(symbols, i)) {
+        Symbol sym = next(symbols, i);
+        switch (sym.token) {
+        case PP_NEWLINE:
+        case PP_WHITESPACE:
+            if (last != PP_WHITESPACE) {
+                secondlast = last;
+                last = PP_WHITESPACE;
+                output += ' ';
+            }
+            continue;
+        case PP_STRING_LITERAL:
+            if (last == PP_STRING_LITERAL)
+                output.chop(1);
+            else if (secondlast == PP_STRING_LITERAL && last == PP_WHITESPACE)
+                output.chop(2);
+            else
+                break;
+            output += sym.lexem().mid(1);
+            secondlast = last;
+            last = PP_STRING_LITERAL;
+            continue;
+        case MOC_INCLUDE_BEGIN:
+            lineNum = 0;
+            continue;
+        case MOC_INCLUDE_END:
+            lineNum = sym.lineNum;
+            continue;
+        default:
+            break;
+        }
+        secondlast = last;
+        last = sym.token;
+
+        const int padding = sym.lineNum - lineNum;
+        if (padding > 0) {
+            output.resize(output.size() + padding);
+            memset(output.data() + output.size() - padding, '\n', padding);
+            lineNum = sym.lineNum;
+        }
+
+        output += sym.lexem();
+    }
+
+    return output;
+}
