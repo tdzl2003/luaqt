@@ -729,13 +729,8 @@ void Moc::parse()
                     int rewind = index--;
                     if (parseMaybeFunction(&def, &funcDef)) {
                         if (funcDef.isConstructor) {
-                            if ((access == FunctionDef::Public) && funcDef.isInvokable) {
+                            if (access == FunctionDef::Public) {
                                 def.constructorList += funcDef;
-                                while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-                                    funcDef.wasCloned = true;
-                                    funcDef.arguments.removeLast();
-                                    def.constructorList += funcDef;
-                                }
                             }
                         } else if (funcDef.isDestructor) {
                             // don't care about destructors
@@ -744,29 +739,14 @@ void Moc::parse()
                                 def.publicList += funcDef;
                             if (funcDef.isSlot) {
                                 def.slotList += funcDef;
-                                while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-                                    funcDef.wasCloned = true;
-                                    funcDef.arguments.removeLast();
-                                    def.slotList += funcDef;
-                                }
                                 if (funcDef.revision > 0)
                                     ++def.revisionedMethods;
                             } else if (funcDef.isSignal) {
                                 def.signalList += funcDef;
-                                while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-                                    funcDef.wasCloned = true;
-                                    funcDef.arguments.removeLast();
-                                    def.signalList += funcDef;
-                                }
                                 if (funcDef.revision > 0)
                                     ++def.revisionedMethods;
-                            } else if (funcDef.isInvokable) {
+                            } else {
                                 def.methodList += funcDef;
-                                while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-                                    funcDef.wasCloned = true;
-                                    funcDef.arguments.removeLast();
-                                    def.methodList += funcDef;
-                                }
                                 if (funcDef.revision > 0)
                                     ++def.revisionedMethods;
                             }
