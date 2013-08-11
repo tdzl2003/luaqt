@@ -658,7 +658,7 @@ void Moc::parse()
                         while (inClass(&nestedDef) && inClass(&def)) {
                             t = next();
                             if (t >= Q_META_TOKEN_BEGIN && t < Q_META_TOKEN_END)
-                                error("Meta object features not supported for nested classes");
+                                warning("Meta object features not supported for nested classes");
                         }
                     }
                 } break;
@@ -765,7 +765,7 @@ void Moc::parse()
 
 
             if (!def.hasQObject && !def.hasQGadget)
-                error("Class declarations lacks Q_OBJECT macro.");
+                warning("Class declarations lacks Q_OBJECT macro.");
 
             checkSuperClasses(&def);
             checkProperties(&def);
