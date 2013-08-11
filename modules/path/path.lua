@@ -43,8 +43,8 @@ if (isWindows) then
     end
     
     function path.splitdrive(str)
-        local p1, p2 =  str:match("(%a%:)(.+)")
-        if (p1) then
+        local p0, p1, p2 =  str:match("()(%a%:)(.+)")
+        if (p0==1) then
             return p1, p2
         end
         return '', str
@@ -105,11 +105,24 @@ function path.normalize(path, sep)
 
     if (p1) then
         prefix = p1
-        local p3, p4 = p2:match("([%/%\\]+)(.+)")
-        prefix = p1..p3
-        path = p4
+        local p0, p3, p4 = p2:match("()([%/%\\]+)(.+)")
+        if (p0 == 1) then
+            prefix = p1..p3
+            path = p4
+        else
+            prefix = p1
+            path = p2
+        end
     else
-        prefix, path = path:match("([%/%\\]+)(.+)")
+        local p0, p3, p4 = path:match("()([%/%\\]+)(.+)")
+
+        if (p0 == 1) then
+            prefix = p3
+            path = p4
+        else
+            prefix = ""
+            path = path
+        end
     end
 
     local comps = {}
