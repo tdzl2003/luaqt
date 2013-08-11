@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaQt", "LuaQt\LuaQt.vcxproj", "{E9475B57-809C-45E3-BF23-A1AB6E4FA900}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtWidgets", "QtWidgets\QtWidgets.vcxproj", "{42BB0400-BCBA-42D8-B6F1-FC7631237D94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9475B57-809C-45E3-BF23-A1AB6E4FA900}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E9475B57-809C-45E3-BF23-A1AB6E4FA900}.Debug|Win32.Build.0 = Debug|Win32
+		{E9475B57-809C-45E3-BF23-A1AB6E4FA900}.Release|Win32.ActiveCfg = Release|Win32
+		{E9475B57-809C-45E3-BF23-A1AB6E4FA900}.Release|Win32.Build.0 = Release|Win32
+		{42BB0400-BCBA-42D8-B6F1-FC7631237D94}.Debug|Win32.ActiveCfg = Debug|Win32
+		{42BB0400-BCBA-42D8-B6F1-FC7631237D94}.Debug|Win32.Build.0 = Debug|Win32
+		{42BB0400-BCBA-42D8-B6F1-FC7631237D94}.Release|Win32.ActiveCfg = Release|Win32
+		{42BB0400-BCBA-42D8-B6F1-FC7631237D94}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
