@@ -14,6 +14,7 @@
     <ClCompile Include="..\..\..\src\LuaQt\arghelper.cpp" />
     <ClCompile Include="..\..\..\src\LuaQt\argrefframe.cpp" />
     <ClCompile Include="..\..\..\src\LuaQt\metafunctions.cpp" />
+    <ClCompile Include="..\..\..\src\LuaQt\objectlifecycle.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E9475B57-809C-45E3-BF23-A1AB6E4FA900}</ProjectGuid>

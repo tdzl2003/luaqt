@@ -25,30 +25,50 @@
 ****************************************************************************/
 
 #include <LuaQt/globals.hpp>
+#include <stdlib.h>
 
-namespace LuaQt
-{
-	//upvalue 1: method map
-	//upvalue 2: getter map
-	int General_index(lua_State *L)
+namespace LuaQt{
+	void* allocObject(lua_State *L, size_t size, const char* className)
 	{
-		//try method map
-		lua_pushvalue(L, 2);
-		lua_rawget(L, lua_upvalueindex(1));
-		if (!lua_isnil(L, -1))
-		{
-			return 1;
-		}
-		lua_pop(L, 1);
+		void* ret = malloc(size);
 
-		lua_pushnil(L);
-		return 1;
+		lua_createtable(L, 0, 1);
+
+		lua_pushlightuserdata(L, ret);
+		lua_setfield(L, -2, className);
+
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+
+		return ret;
 	}
 
-	//upvalue 1: setter map
-	int General_newindex(lua_State *L)
+	bool isObject(lua_State *L, int idx, const char* className)
 	{
-		return 0;
+		lua_getfield(L, idx, className);
+		bool ret = lua_islightuserdata(L, idx);
+		lua_pop(L, 1);
+		return ret;
+	}
+
+	void* checkObject(lua_State *L, int idx, const char* className)
+	{
+		if (!lua_istable(L, idx)){
+			luaL_error(L, "Argument %d is not a `%s` object.", idx, className);
+		}
+		lua_getfield(L, idx, className);
+		if (!lua_islightuserdata(L, -1)){
+			luaL_error(L, "Argument %d is not a `%s` object.", idx, className);
+		}
+		void* ret = lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		return ret;
+	}
+
+	void freeObject(lua_State *L, size_t size, int idx, const char* className)
+	{
+		void* obj = checkObject(L, idx, className);
+		free(obj);
 	}
 
 }

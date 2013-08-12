@@ -43,6 +43,16 @@ namespace LuaQt
 		return lua_tointeger(L, idx);
 	}
 
+	void ArgHelper<int>::pushRetVal(lua_State *L, const int& idx)
+	{
+		lua_pushinteger(L, idx);
+	}
+
+	void ArgHelper<int>::pushRetVal(lua_State *L, int&& idx)
+	{
+		lua_pushinteger(L, idx);
+	}
+
 	bool ArgHelper<char**>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_istable(L, idx))
@@ -62,8 +72,8 @@ namespace LuaQt
 			lua_rawgeti(L, idx, i+1);
 			size_t len = 0;
 			const char* data = lua_tolstring(L, -1, &len);
-			char* dest = (char*)allocArgRef(L, len);
-			memcpy(dest, data, len);
+			char* dest = (char*)allocArgRef(L, len+1);
+			memcpy(dest, data, len+1);
 			out[i] = dest;
 			lua_pop(L, 1);
 		}

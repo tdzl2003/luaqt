@@ -28,6 +28,7 @@
 
 #include <lua.hpp>
 
+// Utility functions
 inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 {
 	for (size_t i =0; i < count; ++i)
@@ -39,12 +40,21 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
 
+// Object life-cycle functions
+namespace LuaQt{
+	void* allocObject(lua_State *L, size_t size, const char* className);
+	bool isObject(lua_State *L, int idx, const char* className);
+	void* checkObject(lua_State *L, int idx, const char* className);
+	void freeObject(lua_State *L, size_t size, int idx, const char* className);
+}
+
+// Meta functions:
 namespace LuaQt{
 	int General_index(lua_State *L);
 	int General_newindex(lua_State *L);
 }
 
-
+// Argument helper functions&macros
 namespace LuaQt
 {
 	template <typename T>
@@ -53,6 +63,8 @@ namespace LuaQt
 	public:
 		static bool CheckArg(lua_State *L, int idx);
 		static T GetArg(lua_State *L, int idx);
+		static void pushRetVal(lua_State*L, const T& val);
+		static void pushRetVal(lua_State*L, T&& val);
 	};
 
 	void StartArgRefFrame(lua_State *L);
@@ -64,5 +76,11 @@ namespace LuaQt
 #define CHECK_ARG_COUNT(c) if (lua_gettop(L) != c) { break; }
 #define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<t>::CheckArg(L, i)) { break;}
 #define GET_ARG(t, i, n) t n = LuaQt::ArgHelper<t>::GetArg(L, i)
+
+#define CHECK_METHOD_ARG_COUNT(c) if (lua_gettop(L) != c+1) { break; }
+#define CHECK_METHOD_ARG(t, i) if (!LuaQt::ArgHelper<t>::CheckArg(L, i+1)) { break;}
+#define GET_METHOD_ARG(t, i, n) t n = LuaQt::ArgHelper<t>::GetArg(L, i+1)
+
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
+#define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<t>::pushRetVal(L, v)

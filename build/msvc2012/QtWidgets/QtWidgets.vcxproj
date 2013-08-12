@@ -43,6 +43,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\include\;C:\Work\test\luajit\LuaJIT-2.0.2\src;C:\Users\Yun\Documents\GitHub\luaqt\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\lib;C:\Work\test\luajit\LuaJIT-2.0.2\src;$(LibraryPath)</LibraryPath>
+    <OutDir>C:\Work\test\lqt\test</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
