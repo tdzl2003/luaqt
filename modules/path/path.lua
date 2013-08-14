@@ -39,7 +39,7 @@ path.current = current
 if (isWindows) then
     sep = "\\"
     function path.isabs(str)
-        return str:find("%a%:") == 1 or str:find("[%/%\\]") == 1
+        return str:match("()%a%:") == 1 or str:match("()[%/%\\]") == 1
     end
     
     function path.splitdrive(str)
@@ -61,10 +61,10 @@ else
         return '', str
     end
     function path.isabs(str)
-        return str:find("%/") == 1
+        return str:match("()%/") == 1
     end
 
-    assert(path.isabs(current))
+    assert(path.isabs(current()))
     assert(path.isabs("/usr/home"))
     assert(not path.isabs(".src"))
     assert(not path.isabs("ppp/asdf/asdf"))
@@ -195,15 +195,16 @@ function path.normjoin(...)
 end
 
 function path.abspath(path)
-    return normalize(join(current, path))
+    return normalize(join(current(), path))
 end
+local abspath = path.abspath
 
 local function _abspath_split(path)
     path = abspath(path)
     local prefix, rest = splitdrive(path)
     local restsplit = {}
     --rest:split("[%/%\\]", false, true)
-    for k in rest:gmatch("[%/%\\]") do
+    for k in rest:gmatch("([^%/%\\]+)") do
         table.insert(restsplit, k)
     end
 
@@ -211,7 +212,7 @@ local function _abspath_split(path)
 end
 
 function path.relpath(path, start)
-    start = start or current
+    start = start or current()
     
     local start_prefix, start_list = _abspath_split(start)
     local path_prefix, path_list = _abspath_split(path)
@@ -220,7 +221,7 @@ function path.relpath(path, start)
         return path
     end
     
-    i = 1
+    local i = 1
     while (i<=#start_list and i<=#path_list and start_list[i] == path_list[i]) do
         i = i + 1
     end
