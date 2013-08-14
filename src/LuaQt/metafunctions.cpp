@@ -48,6 +48,7 @@ namespace LuaQt
 	//upvalue 1: setter map
 	int General_newindex(lua_State *L)
 	{
+		luaL_error(L, "Not implemented yet!");
 		return 0;
 	}
 

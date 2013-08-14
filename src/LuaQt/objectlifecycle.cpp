@@ -82,7 +82,10 @@ namespace LuaQt{
 		assert(userData);
 		lua_State *L = userData->L;
 		getweakref(L, userData->lua_ref);
+
 		if (lua_isnil(L, -1)){
+			weakunref(L, userData->lua_ref);
+			userData->lua_ref = LUA_REFNIL;
 			lua_pop(L, 1);
 			return;
 		}
