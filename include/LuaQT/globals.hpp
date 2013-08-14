@@ -39,6 +39,7 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 }
 
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
+#define STR(x) #x
 
 namespace LuaQt{
 	void saveGlobalState(lua_State *L);
@@ -88,15 +89,43 @@ namespace LuaQt
 	void EndArgRefFrame(lua_State *L);
 
 	void* allocArgRef(lua_State *L, size_t size);
+
+	template <typename T>
+	class remove_ref
+	{
+	public:
+		typedef T type;
+	};
+
+	template <typename T>
+	class remove_ref<T&>
+	{
+	public:
+		typedef T type;
+	};
+
+	template <typename T>
+	class remove_ref<const T&>
+	{
+	public:
+		typedef T type;
+	};
+
+	template <typename T>
+	class remove_ref<T&&>
+	{
+	public:
+		typedef T type;
+	};
 }
 
 #define CHECK_ARG_COUNT(c) if (lua_gettop(L) != c) { break; }
-#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<t>::CheckArg(L, i)) { break;}
-#define GET_ARG(t, i, n) t n = LuaQt::ArgHelper<t>::GetArg(L, i)
+#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::CheckArg(L, i)) { break;}
+#define GET_ARG(t, i, n) LuaQt::remove_ref<t>::type n = LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::GetArg(L, i)
 
 #define CHECK_METHOD_ARG_COUNT(c) if (lua_gettop(L) != c+1) { break; }
-#define CHECK_METHOD_ARG(t, i) if (!LuaQt::ArgHelper<t>::CheckArg(L, i+1)) { break;}
-#define GET_METHOD_ARG(t, i, n) t n = LuaQt::ArgHelper<t>::GetArg(L, i+1)
+#define CHECK_METHOD_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::CheckArg(L, i+1)) { break;}
+#define GET_METHOD_ARG(t, i, n) LuaQt::remove_ref<t>::type n = LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::GetArg(L, i+1)
 
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
