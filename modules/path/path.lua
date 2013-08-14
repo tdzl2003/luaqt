@@ -246,6 +246,23 @@ path.listAll = impl.listAll
 path.listFiles = impl.listFiles
 path.listSubdirs = impl.listSubdirs
 
+local exists = path.exists
+
+local function mkdir(path, mode) --mode = 777
+    mode = mode or 0x1FF
+    local head, tail = split(path)
+    if (tail == "") then
+        head, tail = split(head)
+    end
+    if (head~="" and tail~="" and not exists(head)) then
+        mkdir(head, mode)
+    end
+    if (not exists(path)) then
+        impl.mkdir(path, mode)
+    end
+end
+path.mkdir = mkdir
+
 --[[
 function path.modifiedTime(path)
 	return fbmakelib.modifiedTime(path)
@@ -253,20 +270,6 @@ end
 
 function createdTime(path)
 	return fbmakelib.createdTime(path)
-end
-
-function mkdir(path, mode) --mode = 777
-    mode = mode or 0x1FF
-    local head, tail = split(path)
-    if (tail == "") then
-        head, tail = split(head)
-    end
-    if (head~="" and tail~="" and not exist(head)) then
-        mkdir(head, mode)
-    end
-    if (not exist(path)) then
-        fbmakelib.mkdir(path, mode)
-    end
 end
 
 function rmdir(path, func)

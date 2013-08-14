@@ -68,6 +68,8 @@ ffi.cdef[[
 
 	intptr_t __cdecl _findfirst64(const char * _Filename, __finddata64_t * _FindData);
 	int __cdecl _findnext64(intptr_t _FindHandle, __finddata64_t * _FindData);
+
+	int __cdecl _mkdir(const char * _Path);
 ]]
 
 function impl.current()
@@ -139,6 +141,10 @@ function impl.listSubdirs(dir)
 	return listFile(dir, function(cf)
 		return bit.band(cf[0].attrib, 0x10) ~= 0
 	end)
+end
+
+function impl.mkdir(path)
+	return C._mkdir(path) == 0
 end
 
 return impl

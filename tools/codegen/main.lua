@@ -45,7 +45,7 @@ end
 
 local packageTemplate = loadTemplate("template/package.cpp")
 local function writePackageSource(packageName, classes)
-	local fd = io.open("gen/"..packageName..".cpp", "w+")
+	local fd = io.open("gen/"..packageName.."/"..packageName..".cpp", "w+")
 
 	fd:write(packageTemplate({
 			packageName = packageName,
@@ -119,7 +119,7 @@ local function writeClassSource(packageName, class)
 		end
 	end
 
-	local fd = io.open("gen/def"..class.classname..".cpp", "w+")
+	local fd = io.open("gen/"..packageName.."/def"..class.classname..".cpp", "w+")
 	fd:write(classTemplate(class))
 	fd:close()
 end
@@ -129,6 +129,8 @@ local packages = readJsonFile("tmp/classList.json")
 
 for k,classes in pairs(packages) do
 	print('Package: '..k)
+	local pkgdir = "gen/"..k
+	path.mkdir(pkgdir)
 	writePackageSource(k, classes)
 	for i,class in ipairs(classes) do
 		print('\tClass: '..class)
