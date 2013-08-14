@@ -25,23 +25,15 @@
 ****************************************************************************/
 
 #include <LuaQt/globals.hpp>
+#include <QtCore/qobject.h>
+#include <QtCore/qvariant.h>
 #include <stdlib.h>
+#include <assert.h>
 
+// Currently, LuaJIT 2.0 has no __gc support for "table" type.
+// So do something ugly.
+// LuaJIT 2.1 will solve this problem. Do something then.
 namespace LuaQt{
-	void* allocObject(lua_State *L, size_t size, const char* className)
-	{
-		void* ret = malloc(size);
-
-		lua_createtable(L, 0, 1);
-
-		lua_pushlightuserdata(L, ret);
-		lua_setfield(L, -2, className);
-
-		luaL_getmetatable(L, className);
-		lua_setmetatable(L, -2);
-
-		return ret;
-	}
 
 	bool isObject(lua_State *L, int idx, const char* className)
 	{
@@ -65,10 +57,95 @@ namespace LuaQt{
 		return ret;
 	}
 
-	void freeObject(lua_State *L, size_t size, int idx, const char* className)
+	class QLuaQtUserData
+		: public QObjectUserData
 	{
-		void* obj = checkObject(L, idx, className);
-		free(obj);
+	public:
+		lua_State *L;
+		int lua_ref;
+	};
+
+	void PushObject(lua_State *L, QObject* obj)
+	{
+		QLuaQtUserData* userData = (QLuaQtUserData*) obj->userData(0);
+		if (!userData){
+			//TODO: Get className from meta-object and init it.
+			// use obj->metaObject()->className
+			luaL_error(L, "Object has no lua reference.");
+		}
+		getweakref(L, userData->lua_ref);
+	}
+
+	static void onDestroyed(QObject* obj)
+	{
+		QLuaQtUserData* userData = (QLuaQtUserData*) obj->userData(0);
+		assert(userData);
+		lua_State *L = userData->L;
+		getweakref(L, userData->lua_ref);
+		if (lua_isnil(L, -1)){
+			lua_pop(L, 1);
+			return;
+		}
+		//TODO: clean lightuserdata pointer in table.
+
+		//remove gcer.
+		lua_pushliteral(L, "__gcer");
+		lua_rawget(L, -2);
+		QObject** ppobj = (QObject**)lua_touserdata(L, 1);
+		*ppobj = NULL;
+		lua_pop(L, 1);
+
+		weakunref(L, userData->lua_ref);
+	}
+
+	static int gcer(lua_State *L)
+	{
+		QObject** ppobj = (QObject**)lua_touserdata(L, 1);
+		QObject* obj = *ppobj;
+		*ppobj = NULL;
+		delete obj;
+		return 0;
+	}
+
+#define GCer "LuaQtGCer"
+
+	void InitGCer(lua_State *L)
+	{
+		luaL_newmetatable(L, GCer);
+		lua_pushcfunction(L, gcer);
+		lua_setfield(L, -2, "__gc");
+		lua_pop(L, 1);
+	}
+
+	void InitAndPushObject(lua_State *L, QObject* obj, void* ptr, const char* className)
+	{
+		// create object.
+		lua_createtable(L, 0, 1);
+		lua_pushstring(L, className);
+		lua_pushlightuserdata(L, ptr);
+		lua_rawset(L, -3);
+
+		lua_pushliteral(L, "__gcer");
+		QObject** ppobj = (QObject**)lua_newuserdata(L, sizeof(QObject*));
+		(*ppobj) = obj;
+		luaL_getmetatable(L, GCer);
+		lua_setmetatable(L, -2);
+		lua_rawset(L, -3);
+		
+		luaL_getmetatable(L, className);
+		lua_setmetatable(L, -2);
+
+		// listen "destroyed" signal
+		obj->connect(obj, &QObject::destroyed, onDestroyed);
+
+		// get weak reference id.
+		// There's no LUA_RIDX_MAINTHREAD in luajit now,
+		// so DONOT require any module in coroutine thread!
+		QLuaQtUserData* userData = new QLuaQtUserData();
+		userData->L = getGlobalState(L);
+		lua_pushvalue(L, -1);
+		userData->lua_ref = weakref(L);
+		obj->setUserData(0, userData);
 	}
 
 }

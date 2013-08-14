@@ -13,8 +13,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\LuaQt\arghelper.cpp" />
     <ClCompile Include="..\..\..\src\LuaQt\argrefframe.cpp" />
+    <ClCompile Include="..\..\..\src\LuaQt\globalstate.cpp" />
     <ClCompile Include="..\..\..\src\LuaQt\metafunctions.cpp" />
     <ClCompile Include="..\..\..\src\LuaQt\objectlifecycle.cpp" />
+    <ClCompile Include="..\..\..\src\LuaQt\weakref.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E9475B57-809C-45E3-BF23-A1AB6E4FA900}</ProjectGuid>
@@ -46,7 +48,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Work\test\luajit\LuaJIT-2.0.2\src;C:\Users\Yun\Documents\GitHub\luaqt\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Work\test\luajit\LuaJIT-2.0.2\src;C:\Users\Yun\Documents\GitHub\luaqt\include;C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\Yun\Documents\GitHub\luaqt\include;C:\Work\test\luajit\LuaJIT-2.0.2\src;$(IncludePath)</IncludePath>

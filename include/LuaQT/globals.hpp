@@ -40,13 +40,30 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
 
-// Object life-cycle functions
 namespace LuaQt{
-	void* allocObject(lua_State *L, size_t size, const char* className);
+	void saveGlobalState(lua_State *L);
+	lua_State* getGlobalState(lua_State *L);
+}
+
+// Weak ref functions
+namespace LuaQt{
+	int weakref(lua_State *L);
+	void getweakref(lua_State *L, int id);
+	void weakunref(lua_State *L, int id);
+}
+
+// Object life-cycle functions
+class QObject;
+namespace LuaQt{
 	bool isObject(lua_State *L, int idx, const char* className);
 	void* checkObject(lua_State *L, int idx, const char* className);
-	void freeObject(lua_State *L, size_t size, int idx, const char* className);
+
+	void PushObject(lua_State *L, QObject* obj);
+	void InitAndPushObject(lua_State *L, QObject* obj, void* ptr, const char* className);
+
+	void InitGCer(lua_State *L);
 }
+
 
 // Meta functions:
 namespace LuaQt{
