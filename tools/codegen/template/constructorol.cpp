@@ -17,7 +17,13 @@
 		end
 		return ret
 %*/
-		CLASS* obj = new CLASS(arg1, arg2);
+		CLASS* obj = new CLASS(/*% 
+		local ret = ""
+		for i,v in ipairs(arguments) do
+			ret = ret .. string.format("arg%d, ", i)
+		end
+		return ret:sub(1, -3)
+%*/);
 
 		LuaQt::InitAndPushObject(L, obj, obj, CLASS_NAME);
 
