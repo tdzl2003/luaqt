@@ -43,14 +43,15 @@ end
 
 print("parsing...")
 
-for i,v in ipairs(fileList) do
-	local package = packageMap[v]
+for i,fn in ipairs(fileList) do
+	local package = packageMap[fn]
 
-	local classes = mocreader.parse(v, {
+	local classes = mocreader.parse(fn, {
 		includePath= {QtIncludePath}
 	})
 	for i,v in ipairs(classes) do
-		print(v.classname)
+		v.fileName = path.relpath(fn, QtIncludePath)
+		print(v.classname, v.fileName)
 		table.insert(classList[package], v.classname)
 		local fd = io.open(path.normalize("tmp/"..v.classname..".json"), "w")
 		fd:write(json.encode(v));
