@@ -231,10 +231,7 @@ end
 
 local classTemplate = loadTemplate("template/class.cpp")
 local function writeClassSource(packageName, class)
-	if (isAbstractClass(class)) then
-		print("\t\tAbstract.")
-		return
-	end
+	class.isAbstract = isAbstractClass(class)
 	class = copyTable(class)
 	for k,v in pairs(funcs) do
 		class[k] = class[k] or function(...)
@@ -254,7 +251,7 @@ for k,classes in pairs(packages) do
 	print('Package: '..k)
 	local pkgdir = "gen/"..k
 	path.mkdir(pkgdir)
-	writePackageSource(k, classes)
+	local validClasses = {}
 	for i,class in ipairs(classes) do
 		print('\tClass: '..class)
 		local info = loadClassInfo(class)
@@ -264,9 +261,11 @@ for k,classes in pairs(packages) do
 		assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
 		if (info and info.hasQObject and info.name ~= "Qt") then
 			writeClassSource(k, info)
+			table.insert(validClasses, class)
 		else
 			print('\t\tIgnore non-QObject type.')
 		end
 		-- collectgarbage()
 	end
+	writePackageSource(k, validClasses)
 end

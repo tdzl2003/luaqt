@@ -30,22 +30,34 @@
 #define CLASS_NAME STR(/*%return classname%*/)
 #define CLASS   /*%return classname%*/
 
-/*%return constructors()%*/
+/*%
+	if (not isAbstract) then
+		return constructors()
+	else
+		return ""
+	end
+%*/
 
-luaL_Reg methods[] = {
+static luaL_Reg methods[] = {
 	{NULL, NULL}
 };
 
-luaL_Reg getters[] = {
+static luaL_Reg getters[] = {
 	{NULL, NULL}
 };
 
-luaL_Reg setters[] = {
+static luaL_Reg setters[] = {
 	{NULL, NULL}
 };
 
-luaL_Reg statics[] = {
-	{"new", /*%return classname%*/_constructor},
+static luaL_Reg statics[] = {
+/*%
+	if (not isAbstract) then
+		return '{"new", ' .. classname .. '_constructor},'
+	else
+		return ""
+	end
+%*/
 	{NULL, NULL}
 };
 
@@ -56,7 +68,7 @@ luaL_Reg statics[] = {
 //	return 0;
 //}
 
-void luadef_QApplication(lua_State *L)
+void luadef_/*%return classname%*/(lua_State *L)
 {
 	// register meta table.
 	if (!luaL_newmetatable(L, CLASS_NAME)) 
