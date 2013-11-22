@@ -179,6 +179,7 @@ struct ClassDef {
     int notifyableProperties;
     QList<PropertyDef> propertyList;
     QList<ClassInfoDef> classInfoList;
+	QList<ClassDef>		nestedClasses;
     QMap<QByteArray, bool> enumDeclarations;
     QList<EnumDef> enumList;
     QMap<QByteArray, QByteArray> flagAliases;

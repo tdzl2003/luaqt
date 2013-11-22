@@ -139,6 +139,35 @@ local function copyTable(table)
 	return ret
 end
 
+local function findNestedName(class, name)
+	-- find nested enum
+	for i,v in ipairs(class.enumList) do
+		if (v.name == name) then
+			return class.classname.."::"..name
+		end
+	end
+	-- find nested class
+	for i,v in ipairs(class.nestedClasses) do
+		if (v.classname == name) then
+			return class.classname.."::"..name
+		end
+	end
+	-- find flag alias
+	for k,v in pairs(class.flagAliases) do
+		if (v == name) then
+			return class.classname.."::"..name
+		end
+	end
+	-- find in super classes.
+	for i,v in ipairs(class.superclassList) do
+		local cinfo = loadClassInfo(v.name)
+		local ret = findNestedName(cinfo, name)
+		if (ret) then
+			return ret
+		end
+	end
+end
+
 local constructorTemplate = loadTemplate("template/constructor.cpp")
 local constructorOLTemplate = loadTemplate("template/constructorol.cpp")
 -- local methodTemplate = loadTemplate("template/method.cpp")
@@ -159,6 +188,23 @@ local function printMethods(class, name, methods, isConstructor)
 		end
 
 		methods = genMethods
+	end
+
+	-- parse nested enum&class argument
+	do
+		for i,v in ipairs(methods) do
+			for j,arg in ipairs(v.arguments) do
+				local tname = findNestedName(class, arg.type.rawName)
+				if (tname) then
+					local t = arg.type
+					if (t.referenceType == "noreference") then
+						arg.normalizedType = tname
+					else
+						error("Not implemented.")
+					end
+				end
+			end
+		end
 	end
 
 	local function overloads()
@@ -189,6 +235,7 @@ local function writeClassSource(packageName, class)
 		print("\t\tAbstract.")
 		return
 	end
+	class = copyTable(class)
 	for k,v in pairs(funcs) do
 		class[k] = class[k] or function(...)
 			return v(class, ...)

@@ -662,6 +662,7 @@ void Moc::parse()
                             if (t >= Q_META_TOKEN_BEGIN && t < Q_META_TOKEN_END)
                                 warning("Meta object features not supported for nested classes");
                         }
+						def.nestedClasses.push_back(nestedDef);
                     }
                 } break;
                 case Q_SIGNALS_TOKEN:

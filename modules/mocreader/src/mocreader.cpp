@@ -370,6 +370,192 @@ static void lua_pushEnumDef(lua_State *L, const EnumDef& def)
 	lua_setfield(L, -2, "isEnumClass");
 }
 
+static void lua_pushClassDef(lua_State *L, const ClassDef& def)
+{
+	lua_createtable(L, 0, 20);
+
+	// classname
+	lua_pushstring(L, def.classname.data());
+	lua_setfield(L, -2, "classname");
+
+	// qualified
+	lua_pushstring(L, def.qualified.data());
+	lua_setfield(L, -2, "qualified");
+
+	// superclasses
+	lua_createtable(L, def.superclassList.size(), 0);
+	for (size_t j = 0; j < def.superclassList.size(); ++j)
+	{
+		lua_createtable(L, 0, 2);
+			
+		lua_pushstring(L, def.superclassList[j].first);
+		lua_setfield(L, -2, "name");
+
+		lua_pushFunctionDef_Access(L, def.superclassList[j].second);
+		lua_setfield(L, -2, "access");
+
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "superclassList");
+
+	// interfaces
+	// Don't know why interface list is a 2-dimensions list?
+	lua_createtable(L, def.interfaceList.size(), 0);
+	for (size_t j = 0; j < def.interfaceList.size(); ++j)
+	{
+		const QList<ClassDef::Interface>& list = def.interfaceList[j];
+		lua_createtable(L, list.size(), 0);
+		for (size_t k = 0; k < list.size(); ++k){
+			lua_createtable(L, 0, 2);
+				
+			lua_pushstring(L, list[k].className);
+			lua_setfield(L, -2, "className");
+
+			lua_pushstring(L, list[k].interfaceId);
+			lua_setfield(L, -2, "interfaceId");
+
+			lua_rawseti(L, -2, k+1);
+		}
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "interfaceList");
+
+	lua_pushboolean(L, def.hasQObject);
+	lua_setfield(L, -2, "hasQObject");
+
+	lua_pushboolean(L, def.hasQGadget);
+	lua_setfield(L, -2, "hasQGadget");
+
+	// pluginData
+	lua_createtable(L, 0, 2);
+	{
+		lua_pushstring(L, def.pluginData.iid);
+		lua_setfield(L, -2, "iid");
+
+		lua_pushstring(L, def.pluginData.metaData.toJson());
+		lua_setfield(L, -2, "metaData");
+	}
+	lua_setfield(L, -2, "pluginData");
+		
+	// constructorList
+	lua_createtable(L, def.constructorList.size(), 0);
+	for (size_t j = 0; j < def.constructorList.size(); ++j)
+	{
+		lua_pushFunctionDef(L, def.constructorList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "constructorList");
+
+	// signalList
+	lua_createtable(L, def.signalList.size(), 0);
+	for (size_t j = 0; j < def.signalList.size(); ++j)
+	{
+		lua_pushFunctionDef(L, def.signalList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "signalList");
+
+	// slotList
+	lua_createtable(L, def.slotList.size(), 0);
+	for (size_t j = 0; j < def.slotList.size(); ++j)
+	{
+		lua_pushFunctionDef(L, def.slotList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "slotList");
+
+	// methodList
+	lua_createtable(L, def.methodList.size(), 0);
+	for (size_t j = 0; j < def.methodList.size(); ++j)
+	{
+		lua_pushFunctionDef(L, def.methodList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "methodList");
+
+	// publicList
+	lua_createtable(L, def.publicList.size(), 0);
+	for (size_t j = 0; j < def.publicList.size(); ++j)
+	{
+		lua_pushFunctionDef(L, def.publicList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "publicList");
+
+	// notifyableProperties
+	lua_pushinteger(L, def.notifyableProperties);
+	lua_setfield(L, -2, "notifyableProperties");
+
+	// propertyList
+	lua_createtable(L, def.propertyList.size(), 0);
+	for (size_t j = 0; j < def.propertyList.size(); ++j)
+	{
+		lua_pushPropertyDef(L, def.propertyList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "propertyList");
+
+	// classInfoList
+	lua_createtable(L, def.classInfoList.size(), 0);
+	for (size_t j = 0; j < def.classInfoList.size(); ++j)
+	{
+		lua_pushClassInfoDef(L, def.classInfoList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "classInfoList");
+
+	lua_createtable(L, def.nestedClasses.size(), 0);
+	for (size_t j = 0; j < def.nestedClasses.size(); ++j)
+	{
+		lua_pushClassDef(L, def.nestedClasses[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "nestedClasses");
+
+	//enumDeclarations
+	lua_createtable(L, 0, def.enumDeclarations.size());
+	for (QMap<QByteArray, bool>::const_iterator itor = def.enumDeclarations.begin();
+		itor != def.enumDeclarations.end();
+		++itor)
+	{
+		lua_pushboolean(L, itor.value());
+		lua_setfield(L, -2, itor.key());
+	}
+	lua_setfield(L, -2, "enumDeclarations");
+
+	// enumList
+	lua_createtable(L, def.enumList.size(), 0);
+	for (size_t j = 0; j < def.enumList.size(); ++j)
+	{
+		lua_pushEnumDef(L, def.enumList[j]);
+		lua_rawseti(L, -2, j+1);
+	}
+	lua_setfield(L, -2, "enumList");
+
+	//flagAliases
+	lua_createtable(L, 0, def.flagAliases.size());
+	for (QMap<QByteArray, QByteArray>::const_iterator itor = def.flagAliases.begin();
+		itor != def.flagAliases.end();
+		++itor)
+	{
+		lua_pushstring(L, itor.value());
+		lua_setfield(L, -2, itor.key());
+	}
+	lua_setfield(L, -2, "flagAliases");
+
+	lua_pushinteger(L, def.revisionedMethods);
+	lua_setfield(L, -2, "revisionedMethods");
+
+	lua_pushinteger(L, def.revisionedProperties);
+	lua_setfield(L, -2, "revisionedProperties");
+
+	lua_pushinteger(L, def.begin);
+	lua_setfield(L, -2, "begin");
+
+	lua_pushinteger(L, def.end);
+	lua_setfield(L, -2, "end");
+}
+
 
 static int mocreader_parse(lua_State *L)
 {
@@ -402,182 +588,7 @@ static int mocreader_parse(lua_State *L)
 	lua_createtable(L, moc.classList.size(), 0);
 	for (size_t i = 0; i < moc.classList.size(); ++i)
 	{
-		const ClassDef& def = moc.classList[i];
-		lua_createtable(L, 0, 20);
-
-		// classname
-		lua_pushstring(L, def.classname.data());
-		lua_setfield(L, -2, "classname");
-
-		// qualified
-		lua_pushstring(L, def.qualified.data());
-		lua_setfield(L, -2, "qualified");
-
-		// superclasses
-		lua_createtable(L, def.superclassList.size(), 0);
-		for (size_t j = 0; j < def.superclassList.size(); ++j)
-		{
-			lua_createtable(L, 0, 2);
-			
-			lua_pushstring(L, def.superclassList[j].first);
-			lua_setfield(L, -2, "name");
-
-			lua_pushFunctionDef_Access(L, def.superclassList[j].second);
-			lua_setfield(L, -2, "access");
-
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "superclassList");
-
-		// interfaces
-		// Don't know why interface list is a 2-dimensions list?
-		lua_createtable(L, def.interfaceList.size(), 0);
-		for (size_t j = 0; j < def.interfaceList.size(); ++j)
-		{
-			const QList<ClassDef::Interface>& list = def.interfaceList[j];
-			lua_createtable(L, list.size(), 0);
-			for (size_t k = 0; k < list.size(); ++k){
-				lua_createtable(L, 0, 2);
-				
-				lua_pushstring(L, list[k].className);
-				lua_setfield(L, -2, "className");
-
-				lua_pushstring(L, list[k].interfaceId);
-				lua_setfield(L, -2, "interfaceId");
-
-				lua_rawseti(L, -2, k+1);
-			}
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "interfaceList");
-
-		lua_pushboolean(L, def.hasQObject);
-		lua_setfield(L, -2, "hasQObject");
-
-		lua_pushboolean(L, def.hasQGadget);
-		lua_setfield(L, -2, "hasQGadget");
-
-		// pluginData
-		lua_createtable(L, 0, 2);
-		{
-			lua_pushstring(L, def.pluginData.iid);
-			lua_setfield(L, -2, "iid");
-
-			lua_pushstring(L, def.pluginData.metaData.toJson());
-			lua_setfield(L, -2, "metaData");
-		}
-		lua_setfield(L, -2, "pluginData");
-		
-		// constructorList
-		lua_createtable(L, def.constructorList.size(), 0);
-		for (size_t j = 0; j < def.constructorList.size(); ++j)
-		{
-			lua_pushFunctionDef(L, def.constructorList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "constructorList");
-
-		// signalList
-		lua_createtable(L, def.signalList.size(), 0);
-		for (size_t j = 0; j < def.signalList.size(); ++j)
-		{
-			lua_pushFunctionDef(L, def.signalList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "signalList");
-
-		// slotList
-		lua_createtable(L, def.slotList.size(), 0);
-		for (size_t j = 0; j < def.slotList.size(); ++j)
-		{
-			lua_pushFunctionDef(L, def.slotList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "slotList");
-
-		// methodList
-		lua_createtable(L, def.methodList.size(), 0);
-		for (size_t j = 0; j < def.methodList.size(); ++j)
-		{
-			lua_pushFunctionDef(L, def.methodList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "methodList");
-
-		// publicList
-		lua_createtable(L, def.publicList.size(), 0);
-		for (size_t j = 0; j < def.publicList.size(); ++j)
-		{
-			lua_pushFunctionDef(L, def.publicList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "publicList");
-
-		// notifyableProperties
-		lua_pushinteger(L, def.notifyableProperties);
-		lua_setfield(L, -2, "notifyableProperties");
-
-		// propertyList
-		lua_createtable(L, def.propertyList.size(), 0);
-		for (size_t j = 0; j < def.propertyList.size(); ++j)
-		{
-			lua_pushPropertyDef(L, def.propertyList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "propertyList");
-
-		// classInfoList
-		lua_createtable(L, def.classInfoList.size(), 0);
-		for (size_t j = 0; j < def.classInfoList.size(); ++j)
-		{
-			lua_pushClassInfoDef(L, def.classInfoList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "classInfoList");
-
-		//enumDeclarations
-		lua_createtable(L, 0, def.enumDeclarations.size());
-		for (QMap<QByteArray, bool>::const_iterator itor = def.enumDeclarations.begin();
-			itor != def.enumDeclarations.end();
-			++itor)
-		{
-			lua_pushboolean(L, itor.value());
-			lua_setfield(L, -2, itor.key());
-		}
-		lua_setfield(L, -2, "enumDeclarations");
-
-		// enumList
-		lua_createtable(L, def.enumList.size(), 0);
-		for (size_t j = 0; j < def.enumList.size(); ++j)
-		{
-			lua_pushEnumDef(L, def.enumList[j]);
-			lua_rawseti(L, -2, j+1);
-		}
-		lua_setfield(L, -2, "enumList");
-
-		//flagAliases
-		lua_createtable(L, 0, def.flagAliases.size());
-		for (QMap<QByteArray, QByteArray>::const_iterator itor = def.flagAliases.begin();
-			itor != def.flagAliases.end();
-			++itor)
-		{
-			lua_pushstring(L, itor.value());
-			lua_setfield(L, -2, itor.key());
-		}
-		lua_setfield(L, -2, "flagAliases");
-
-		lua_pushinteger(L, def.revisionedMethods);
-		lua_setfield(L, -2, "revisionedMethods");
-
-		lua_pushinteger(L, def.revisionedProperties);
-		lua_setfield(L, -2, "revisionedProperties");
-
-		lua_pushinteger(L, def.begin);
-		lua_setfield(L, -2, "begin");
-
-		lua_pushinteger(L, def.end);
-		lua_setfield(L, -2, "end");
-
+		lua_pushClassDef(L, moc.classList[i]);
 		lua_rawseti(L, -2, i+1);
 	}
 	
