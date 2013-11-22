@@ -451,7 +451,11 @@ static int mocreader_parse(lua_State *L)
 		}
 		lua_setfield(L, -2, "interfaceList");
 
-		// Don't know what does hasQObject&hasQGadget means, skipping.
+		lua_pushboolean(L, def.hasQObject);
+		lua_setfield(L, -2, "hasQObject");
+
+		lua_pushboolean(L, def.hasQGadget);
+		lua_setfield(L, -2, "hasQGadget");
 
 		// pluginData
 		lua_createtable(L, 0, 2);

@@ -21,6 +21,9 @@ _G.QtIncludePath = path.normjoin(QtPath, "include")
 
 local function readJsonFile(path)
 	local fd = io.open(path)
+	if (not fd) then
+		return 
+	end
 	local str = fd:read("*a")
 	fd:close()
 	return json.decode(str)
@@ -41,6 +44,75 @@ local function loadTemplate(path)
 			return f() or nil
 		end) or nil
 	end
+end
+
+local loadedClassInfo = {}
+
+local function loadClassInfo(class)
+	if (loadedClassInfo[class] == nil) then
+		loadedClassInfo[class] = readJsonFile("tmp/"..class..".json") or false
+	end
+	return loadedClassInfo[class]
+end
+
+local function getMethodSign(method)
+	local ret = {method.name,'(', ''}
+	for i,v in ipairs(method.arguments) do
+		table.insert(ret, v.normalizedType)
+		table.insert(ret, ',')
+	end
+	table.remove(ret)
+	table.insert(ret, ')')
+	return table.concat(ret)
+end
+
+local function getAbstractMethods(info, map)
+	-- first, get all abstract method from all super classes
+	map = map or {}
+
+	for i,v in ipairs(info.superclassList) do
+		local cinfo = loadClassInfo(v.name) or error("Cannot find info of "..v.name)
+		getAbstractMethods(cinfo, map)
+		-- for i,v in ipairs(list or {}) do
+			-- map[v] = true
+		-- end
+	end
+
+	-- test if abstract method are implemented.
+	for i,v in ipairs(info.methodList) do
+		if (not v.isStatic) then
+			local sign = getMethodSign(v)
+			if (v.isAbstract) then
+				map[sign] = true
+			else
+				map[sign] = nil
+			end
+		end
+	end
+
+	-- local ret = {}
+	-- for k,v in pairs(map) do
+		-- table.insert(ret, k)
+	-- end
+	return map
+end
+
+local function isDerivedFromQObject(info)
+	if (info.classname == "QObject") then
+		return true
+	end
+	for i,v in ipairs(info.superclassList) do
+		local cinfo = loadClassInfo(v.name)
+		if (cinfo and isDerivedFromQObject(cinfo)) then
+			return true
+		end
+	end
+	return false
+end
+
+local function isAbstractClass(info)
+	local am = getAbstractMethods(info)
+	return next(am) and true
 end
 
 local packageTemplate = loadTemplate("template/package.cpp")
@@ -113,6 +185,10 @@ end
 
 local classTemplate = loadTemplate("template/class.cpp")
 local function writeClassSource(packageName, class)
+	if (isAbstractClass(class)) then
+		print("\t\tAbstract.")
+		return
+	end
 	for k,v in pairs(funcs) do
 		class[k] = class[k] or function(...)
 			return v(class, ...)
@@ -134,7 +210,16 @@ for k,classes in pairs(packages) do
 	writePackageSource(k, classes)
 	for i,class in ipairs(classes) do
 		print('\tClass: '..class)
-		writeClassSource(k, readJsonFile("tmp/"..class..".json"))
-		collectgarbage()
+		local info = loadClassInfo(class)
+		-- if (info.hasQObject and not isDerivedFromQObject(info)) then
+			-- print("Warning: hasQObject but not derived from QObject.")
+		-- end
+		assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
+		if (info and info.hasQObject and info.name ~= "Qt") then
+			writeClassSource(k, info)
+		else
+			print('\t\tIgnore non-QObject type.')
+		end
+		-- collectgarbage()
 	end
 end

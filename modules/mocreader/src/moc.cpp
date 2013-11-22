@@ -541,6 +541,8 @@ bool Moc::parseMaybeFunction(const ClassDef *cdef, FunctionDef *def)
         warning(msg.constData());
         return false;
     }
+	if ((def->isAbstract = test(EQ)))
+        until(SEMIC);
     return true;
 }
 
@@ -759,13 +761,13 @@ void Moc::parse()
 
             next(RBRACE);
 
-            if (!def.hasQObject && !def.hasQGadget && def.signalList.isEmpty() && def.slotList.isEmpty()
+            /*if (!def.hasQObject && !def.hasQGadget && def.signalList.isEmpty() && def.slotList.isEmpty()
                 && def.propertyList.isEmpty() && def.enumDeclarations.isEmpty())
                 continue; // no meta object code required
+			*/
 
-
-            if (!def.hasQObject && !def.hasQGadget)
-                warning("Class declarations lacks Q_OBJECT macro.");
+            /*if (!def.hasQObject && !def.hasQGadget)
+                warning("Class declarations lacks Q_OBJECT macro.");*/
 
             checkSuperClasses(&def);
             checkProperties(&def);

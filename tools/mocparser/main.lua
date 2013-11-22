@@ -34,6 +34,13 @@ do
 
 			for j,file in ipairs(path.listFiles(packageBase)) do
 				local srcPath = path.normjoin(packageBase, file)
+				-- if (file == "qabstractbutton.h") then
+				-- 	print("HHHHHHHHHHHERE")
+				-- 	packageMap[srcPath] = package
+				-- 	fileList = {}
+				-- 	table.insert(fileList, srcPath)
+				-- 	break
+				-- end
 				packageMap[srcPath] = package
 				table.insert(fileList, srcPath)
 			end
