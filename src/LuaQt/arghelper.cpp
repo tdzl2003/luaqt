@@ -29,7 +29,13 @@
 
 namespace LuaQt
 {
-	bool ArgHelper<int>::CheckArg(lua_State *L, int idx)
+	template class Q_DECL_EXPORT ArgHelper<int, false>;
+	template class Q_DECL_EXPORT ArgHelper<unsigned int, false>;
+	template class Q_DECL_EXPORT ArgHelper<void*, false>;
+	template class Q_DECL_EXPORT ArgHelper<char**, false>;
+	template class Q_DECL_EXPORT ArgHelper<QString, false>;
+
+	Q_DECL_EXPORT bool ArgHelper<int, false>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_isnumber(L, idx))
 		{
@@ -38,22 +44,46 @@ namespace LuaQt
 		return false;
 	}
 
-	int ArgHelper<int>::GetArg(lua_State *L, int idx)
+	Q_DECL_EXPORT int ArgHelper<int, false>::GetArg(lua_State *L, int idx)
 	{
 		return lua_tointeger(L, idx);
 	}
 
-	void ArgHelper<int>::pushRetVal(lua_State *L, const int& idx)
+	Q_DECL_EXPORT void ArgHelper<int, false>::pushRetVal(lua_State *L, const int& idx)
 	{
 		lua_pushinteger(L, idx);
 	}
 
-	void ArgHelper<int>::pushRetVal(lua_State *L, int&& idx)
+	Q_DECL_EXPORT void ArgHelper<int, false>::pushRetVal(lua_State *L, int&& idx)
 	{
 		lua_pushinteger(L, idx);
 	}
 
-	bool ArgHelper<char**>::CheckArg(lua_State *L, int idx)
+	Q_DECL_EXPORT bool ArgHelper<unsigned int, false>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isnumber(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT unsigned int ArgHelper<unsigned int, false>::GetArg(lua_State *L, int idx)
+	{
+		return lua_tointeger(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelper<unsigned int, false>::pushRetVal(lua_State *L, const unsigned int& idx)
+	{
+		lua_pushinteger(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelper<unsigned int, false>::pushRetVal(lua_State *L, unsigned int&& idx)
+	{
+		lua_pushinteger(L, idx);
+	}
+
+	Q_DECL_EXPORT bool ArgHelper<char**, false>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_istable(L, idx))
 		{
@@ -62,7 +92,7 @@ namespace LuaQt
 		return false;
 	}
 
-	char** ArgHelper<char**>::GetArg(lua_State *L, int idx)
+	Q_DECL_EXPORT char** ArgHelper<char**, false>::GetArg(lua_State *L, int idx)
 	{
 		size_t count = lua_objlen(L, idx);
 		char** out = (char**)allocArgRef(L, sizeof(char*)*(count+1));
@@ -81,5 +111,61 @@ namespace LuaQt
 		return out;
 	}
 
+	Q_DECL_EXPORT void ArgHelper<char**, false>::pushRetVal(lua_State *L, char** const& val)
+	{
+		luaL_error(L, "Not implemented: char** type as return value.");
+	}
 
+	Q_DECL_EXPORT void ArgHelper<char**, false>::pushRetVal(lua_State *L, char**&& val)
+	{
+		luaL_error(L, "Not implemented: char** type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelper<void*, false>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_islightuserdata(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT void* ArgHelper<void*, false>::GetArg(lua_State *L, int idx)
+	{
+		return lua_touserdata(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelper<void*, false>::pushRetVal(lua_State *L, void* const& val)
+	{
+		lua_pushlightuserdata(L, val);
+	}
+
+	Q_DECL_EXPORT void ArgHelper<void*, false>::pushRetVal(lua_State *L, void*&& val)
+	{
+		lua_pushlightuserdata(L, val);
+	}
+
+	Q_DECL_EXPORT bool ArgHelper<QString, false>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isstring(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT QString ArgHelper<QString, false>::GetArg(lua_State *L, int idx)
+	{
+		return QString::fromUtf8(lua_tostring(L, idx));
+	}
+
+	Q_DECL_EXPORT void ArgHelper<QString, false>::pushRetVal(lua_State *L, QString const& val)
+	{
+		lua_pushstring(L, val.toUtf8());
+	}
+
+	Q_DECL_EXPORT void ArgHelper<QString, false>::pushRetVal(lua_State *L, QString&& val)
+	{
+		lua_pushstring(L, val.toUtf8());
+	}
 }

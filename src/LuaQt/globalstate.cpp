@@ -29,14 +29,14 @@
 namespace LuaQt{
 	static int s_key_global = 0;
 
-	void saveGlobalState(lua_State *L)
+	Q_DECL_EXPORT void saveGlobalState(lua_State *L)
 	{
 		lua_pushlightuserdata(L, &s_key_global);
 		lua_pushlightuserdata(L, L);
 		lua_rawset(L, LUA_REGISTRYINDEX);
 	}
 
-	lua_State* getGlobalState(lua_State *L)
+	Q_DECL_EXPORT lua_State* getGlobalState(lua_State *L)
 	{
 		lua_pushlightuserdata(L, &s_key_global);
 		lua_rawget(L, LUA_REGISTRYINDEX);

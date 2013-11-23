@@ -35,7 +35,7 @@
 // LuaJIT 2.1 will solve this problem. Do something then.
 namespace LuaQt{
 
-	bool isObject(lua_State *L, int idx, const char* className)
+	Q_DECL_EXPORT bool isObject(lua_State *L, int idx, const char* className)
 	{
 		lua_getfield(L, idx, className);
 		bool ret = lua_islightuserdata(L, idx);
@@ -43,7 +43,7 @@ namespace LuaQt{
 		return ret;
 	}
 
-	void* checkObject(lua_State *L, int idx, const char* className)
+	Q_DECL_EXPORT void* checkObject(lua_State *L, int idx, const char* className)
 	{
 		if (!lua_istable(L, idx)){
 			luaL_error(L, "Argument %d is not a `%s` object.", idx, className);
@@ -57,7 +57,7 @@ namespace LuaQt{
 		return ret;
 	}
 
-	class QLuaQtUserData
+	class  QLuaQtUserData
 		: public QObjectUserData
 	{
 	public:
@@ -65,7 +65,7 @@ namespace LuaQt{
 		int lua_ref;
 	};
 
-	void PushObject(lua_State *L, QObject* obj)
+	Q_DECL_EXPORT void PushObject(lua_State *L, QObject* obj)
 	{
 		QLuaQtUserData* userData = (QLuaQtUserData*) obj->userData(0);
 		if (!userData){
@@ -112,7 +112,7 @@ namespace LuaQt{
 
 #define GCer "LuaQtGCer"
 
-	void InitGCer(lua_State *L)
+	void Q_DECL_EXPORT InitGCer(lua_State *L)
 	{
 		luaL_newmetatable(L, GCer);
 		lua_pushcfunction(L, gcer);
@@ -120,7 +120,7 @@ namespace LuaQt{
 		lua_pop(L, 1);
 	}
 
-	void InitAndPushObject(lua_State *L, QObject* obj, void* ptr, const char* className)
+	Q_DECL_EXPORT void InitAndPushObject(lua_State *L, QObject* obj, void* ptr, const char* className)
 	{
 		// create object.
 		lua_createtable(L, 0, 1);

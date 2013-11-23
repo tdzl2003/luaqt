@@ -30,16 +30,16 @@
 
 namespace LuaQt
 {
-	std::vector<
+	static std::vector<
 		std::vector<void*>
 	> s_frames;
 
-	void StartArgRefFrame(lua_State *L)
+	Q_DECL_EXPORT void StartArgRefFrame(lua_State *L)
 	{
 		s_frames.push_back(std::vector<void*>());
 	}
 
-	void EndArgRefFrame(lua_State *L)
+	Q_DECL_EXPORT void EndArgRefFrame(lua_State *L)
 	{
 		std::vector<void*>& f = s_frames.back();
 		for (size_t i = 0; i < f.size(); ++i)
@@ -50,7 +50,7 @@ namespace LuaQt
 		s_frames.pop_back();
 	}
 
-	void* allocArgRef(lua_State *L, size_t size)
+	Q_DECL_EXPORT void* allocArgRef(lua_State *L, size_t size)
 	{
 		void* ret = malloc(size);
 		s_frames.back().push_back(ret);

@@ -95,7 +95,7 @@ namespace LuaQt{
         }
     }
 
-	int weakref(lua_State *L)
+	int Q_DECL_EXPORT weakref(lua_State *L)
 	{
 		push_weaktable(L);
 		lua_insert(L, -2);
@@ -104,7 +104,7 @@ namespace LuaQt{
         return ret;
 	}
 
-	void getweakref(lua_State *L, int ref)
+	void Q_DECL_EXPORT getweakref(lua_State *L, int ref)
 	{
 		push_weaktable(L);
         lua_rawgeti(L, -1, ref);
@@ -116,7 +116,7 @@ namespace LuaQt{
         //}
 	}
 
-	void weakunref(lua_State *L, int ref)
+	void Q_DECL_EXPORT weakunref(lua_State *L, int ref)
 	{
 		if (ref > 0)
         {

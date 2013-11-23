@@ -30,7 +30,7 @@ namespace LuaQt
 {
 	//upvalue 1: method map
 	//upvalue 2: getter map
-	int General_index(lua_State *L)
+	Q_DECL_EXPORT int General_index(lua_State *L)
 	{
 		//try method map
 		lua_pushvalue(L, 2);
@@ -46,7 +46,7 @@ namespace LuaQt
 	}
 
 	//upvalue 1: setter map
-	int General_newindex(lua_State *L)
+	Q_DECL_EXPORT int General_newindex(lua_State *L)
 	{
 		luaL_error(L, "Not implemented yet!");
 		return 0;

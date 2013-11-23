@@ -26,7 +26,12 @@
 
 #pragma once
 
+#include <type_traits>
+
+#include <QtCore/qcompilerdetection.h>
+
 #include <lua.hpp>
+#include <LuaQt/luaqt.hpp>
 
 // Utility functions
 inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
@@ -41,41 +46,23 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
 #define STR(x) #x
 
-namespace LuaQt{
-	void saveGlobalState(lua_State *L);
-	lua_State* getGlobalState(lua_State *L);
-}
-
-// Weak ref functions
-namespace LuaQt{
-	int weakref(lua_State *L);
-	void getweakref(lua_State *L, int id);
-	void weakunref(lua_State *L, int id);
-}
-
-// Object life-cycle functions
-class QObject;
-namespace LuaQt{
-	bool isObject(lua_State *L, int idx, const char* className);
-	void* checkObject(lua_State *L, int idx, const char* className);
-
-	void PushObject(lua_State *L, QObject* obj);
-	void InitAndPushObject(lua_State *L, QObject* obj, void* ptr, const char* className);
-
-	void InitGCer(lua_State *L);
-}
-
-
-// Meta functions:
-namespace LuaQt{
-	int General_index(lua_State *L);
-	int General_newindex(lua_State *L);
-}
-
 // Argument helper functions&macros
 namespace LuaQt
 {
+	
 	template <typename T>
+	struct is_qobject_ptr
+		: public std::tr1::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_qobject_ptr<T*>
+		: public std::tr1::is_base_of<QObject, T>
+	{
+	};
+
+	template <typename T, bool isQObjectPtr = is_qobject_ptr<T>::value >
 	class ArgHelper
 	{
 	public:
@@ -85,10 +72,23 @@ namespace LuaQt
 		static void pushRetVal(lua_State*L, T&& val);
 	};
 
-	void StartArgRefFrame(lua_State *L);
-	void EndArgRefFrame(lua_State *L);
-
-	void* allocArgRef(lua_State *L, size_t size);
+	template <typename T>
+	class ArgHelper<T, true>
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			return false;
+		}
+		static T GetArg(lua_State *L, int idx){
+			return NULL;
+		}
+		static void pushRetVal(lua_State*L, const T& val){
+			lua_pushnil(L);
+		}
+		static void pushRetVal(lua_State*L, T&& val) {
+			lua_pushnil(L);
+		}
+	};
 
 	template <typename T>
 	class remove_ref
@@ -134,3 +134,7 @@ namespace LuaQt
 
 // Solve some include issues:
 #include <QtCore/QStringList>
+#include <QtWidgets/QWidget>
+#include <QtCore/QState>
+#include <QtWidgets/QUndoStack>
+#include <QtWidgets/QUndoGroup>
