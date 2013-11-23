@@ -1,0 +1,6 @@
+{
+	"excludeClasses": [
+		"QMacCocoaViewContainer",
+		"QMacNativeWidget"
+	]
+}

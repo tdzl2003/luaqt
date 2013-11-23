@@ -29,6 +29,13 @@ local function readJsonFile(path)
 	return json.decode(str)
 end
 
+_G.config = readJsonFile("config.json")
+
+local excludeClasses = {}
+for i,v in ipairs(config.excludeClasses) do
+	excludeClasses[v] = true
+end
+
 local function loadTemplate(path)
 	local fd = io.open(path)
 	local src = fd:read("*a")
@@ -259,7 +266,9 @@ for k,classes in pairs(packages) do
 			-- print("Warning: hasQObject but not derived from QObject.")
 		-- end
 		assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
-		if (info and info.hasQObject and info.name ~= "Qt") then
+		if (excludeClasses[class]) then
+			print("Excluded.")
+		elseif (info and info.hasQObject and info.name ~= "Qt") then
 			writeClassSource(k, info)
 			table.insert(validClasses, class)
 		else
