@@ -27,6 +27,10 @@
 #include <LuaQt/globals.hpp>
 #include </*%return fileName%*/>
 
+/*%
+return depHeaders()
+%*/
+
 #define CLASS_NAME STR(/*%return classname%*/)
 #define CLASS   /*%return classname%*/
 
@@ -38,7 +42,14 @@
 	end
 %*/
 
+/*%
+return methodImpls()
+%*/
+
 static luaL_Reg methods[] = {
+/*%
+	return methodTable()
+%*/
 	{NULL, NULL}
 };
 
@@ -53,7 +64,7 @@ static luaL_Reg setters[] = {
 static luaL_Reg statics[] = {
 /*%
 	if (not isAbstract) then
-		return '{"new", ' .. classname .. '_constructor},'
+		return '\t{"new", ' .. classname .. '_constructor},'
 	else
 		return ""
 	end

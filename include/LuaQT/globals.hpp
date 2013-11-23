@@ -189,11 +189,3 @@ namespace LuaQt
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
 #define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<t>::pushRetVal(L, v)
-
-
-// Solve some include issues:
-#include <QtCore/QStringList>
-#include <QtWidgets/QWidget>
-#include <QtCore/QState>
-#include <QtWidgets/QUndoStack>
-#include <QtWidgets/QUndoGroup>

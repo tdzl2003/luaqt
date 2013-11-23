@@ -495,7 +495,19 @@ bool Moc::parseMaybeFunction(const ClassDef *cdef, FunctionDef *def)
         } else {
             def->type = Type("int");
         }
-    } else {
+    } else if (test(OPERATOR)) {
+		if (test(LPAREN)) {
+			until(RPAREN);
+			def->name = "operator ()";
+		} else if (test(EQ)) {
+			def->name = "operator =";
+		} else {
+			def->name = "operator ?";
+			next();
+		}
+		if (!test(LPAREN))
+            return false;
+	} else {
         Type tempType = parseType();;
         while (!tempType.name.isEmpty() && lookup() != LPAREN) {
             if (testFunctionAttribute(def->type.firstToken, def))
@@ -543,6 +555,12 @@ bool Moc::parseMaybeFunction(const ClassDef *cdef, FunctionDef *def)
     }
 	if ((def->isAbstract = test(EQ)))
         until(SEMIC);
+	else if (!test(SEMIC)) {
+		if (!test(LBRACE)) {
+			return false;
+		}
+		until(RBRACE);
+	}
     return true;
 }
 

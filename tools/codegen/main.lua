@@ -177,7 +177,8 @@ end
 
 local constructorTemplate = loadTemplate("template/constructor.cpp")
 local constructorOLTemplate = loadTemplate("template/constructorol.cpp")
--- local methodTemplate = loadTemplate("template/method.cpp")
+local methodTemplate = loadTemplate("template/method.cpp")
+local methodOLTemplate = loadTemplate("template/methodol.cpp")
 local function printMethods(class, name, methods, isConstructor)
 	local template = isConstructor and constructorTemplate or methodTemplate
 	local overloadTemplate = isConstructor and constructorOLTemplate or methodOLTemplate
@@ -234,6 +235,72 @@ local funcs = {}
 
 function funcs:constructors()
 	return printMethods(self, self.classname..'_constructor', self.constructorList, true)
+end
+
+local function getMethodNames(self)
+	local ret = {}
+	local operators = {}
+	for i, v in ipairs(self.methodList) do
+		if (v.access == "public") then
+			local tmp = ret
+			if (v.name:sub(1, 9) == "operator ") then
+				tmp = operators
+			end
+			if (tmp[v.name]) then
+				table.insert(tmp[v.name], v)
+			else
+				tmp[v.name] = {v}
+			end
+		end
+	end
+	return ret
+end
+
+function funcs:methodImpls()
+	local ret = {}
+	local methods = getMethodNames(self)
+	for k,v in pairs(methods) do
+		table.insert(ret, printMethods(self, self.classname..'_'..k, v, false))
+	end
+	return table.concat(ret, '\n')
+end
+
+function funcs:methodTable()
+	local ret = {}
+	local methods = getMethodNames(self)
+	for k,v in pairs(methods) do
+		table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'}\n')
+	end
+	return table.concat(ret)
+end
+
+function funcs:depHeaders()
+	local classes = {}
+	for i,v in ipairs(self.constructorList) do
+		for j,arg in ipairs(v.arguments) do
+			for type in arg.type.rawName:gmatch("%w+") do
+				classes[type] = true
+			end
+		end
+	end
+	for i,v in ipairs(self.methodList) do
+		for j,arg in ipairs(v.arguments) do
+			for type in arg.type.rawName:gmatch("%w+") do
+				classes[type] = true
+			end
+		end
+		for type in v.type.rawName:gmatch("%w+") do
+			classes[type] = true
+		end
+	end
+	local ret = {}
+	for k,v in pairs(classes) do
+		local cinfo = loadClassInfo(k)
+		if (cinfo and cinfo.fileName) then
+			table.insert(ret, string.format("#include <%s>\n", cinfo.fileName))
+		end
+	end
+	return table.concat(ret)
 end
 
 local classTemplate = loadTemplate("template/class.cpp")
