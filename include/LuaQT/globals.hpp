@@ -46,10 +46,12 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
 #define STR(x) #x
 
+template<typename Enum>
+class QFlags;
+
 // Argument helper functions&macros
 namespace LuaQt
 {
-	
 	template <typename T>
 	struct is_qobject_ptr
 		: public std::tr1::false_type
@@ -62,8 +64,20 @@ namespace LuaQt
 	{
 	};
 
-	template <typename T, bool isQObjectPtr = is_qobject_ptr<T>::value >
-	class ArgHelper
+	template <typename T>
+	struct is_qt_flags
+		: public std::tr1::false_type
+	{
+	};
+
+	template <typename T>
+	struct is_qt_flags<QFlags<T> >
+		: public std::tr1::true_type
+	{
+	};
+
+	template <typename T>
+	class ArgHelperGeneral
 	{
 	public:
 		static bool CheckArg(lua_State *L, int idx);
@@ -73,7 +87,25 @@ namespace LuaQt
 	};
 
 	template <typename T>
-	class ArgHelper<T, true>
+	class ArgHelperEnum
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			return lua_isnumber(L, idx);;
+		}
+		static T GetArg(lua_State *L, int idx){
+			return (T)(lua_tointeger(L, idx));
+		}
+		static void pushRetVal(lua_State*L, const T& val){
+			lua_pushinteger(L, (int)val);
+		}
+		static void pushRetVal(lua_State*L, T&& val) {
+			lua_pushinteger(L, (int)val);
+		}
+	};
+
+	template <typename T>
+	class ArgHelperQObjectPtr
 	{
 	public:
 		static bool CheckArg(lua_State *L, int idx){
@@ -88,6 +120,33 @@ namespace LuaQt
 		static void pushRetVal(lua_State*L, T&& val) {
 			lua_pushnil(L);
 		}
+	};
+
+	template <typename T, 
+		bool isEnum = std::tr1::is_enum<T>::value,
+		bool isFlag = is_qt_flags<T>::value,
+		bool isQObjectPtr = is_qobject_ptr<T>::value>
+	class ArgHelper
+		: public ArgHelperGeneral<T>
+	{
+	};
+
+	template <typename T>
+	class ArgHelper<T, true, false, false>
+		: public ArgHelperEnum<T>
+	{
+	};
+
+	template <typename T>
+	class ArgHelper<T, false, true, false>
+		: public ArgHelperEnum<T>
+	{
+	};
+
+	template <typename T>
+	class ArgHelper<T, false, false, true>
+		: public ArgHelperQObjectPtr<T>
+	{
 	};
 
 	template <typename T>

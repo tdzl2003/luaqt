@@ -83,4 +83,12 @@
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="GeneratedFiles\Debug\moc.moc">
+      <Filter>Generated Files\Debug</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\Release\moc.moc">
+      <Filter>Generated Files\Release</Filter>
+    </CustomBuild>
+  </ItemGroup>
 </Project>
