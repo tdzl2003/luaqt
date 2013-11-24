@@ -29,9 +29,55 @@
 
 namespace LuaQt
 {
+	template class Q_DECL_EXPORT ArgHelperGeneral<bool>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<bool*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<int>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<int*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned int>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<__int64>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<double>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<double*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<bool>::CheckArg(lua_State *L, int idx)
+	{
+		return true;
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<bool>::GetArg(lua_State *L, int idx)
+	{
+		return lua_toboolean(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<bool>::pushRetVal(lua_State *L, const bool& idx)
+	{
+		lua_pushboolean(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<bool>::pushRetVal(lua_State *L, bool&& idx)
+	{
+		lua_pushboolean(L, idx);
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<bool*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT bool* ArgHelperGeneral<bool*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: bool* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<bool*>::pushRetVal(lua_State *L, bool* const& idx)
+	{
+		luaL_error(L, "Not implemented: bool* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<bool*>::pushRetVal(lua_State *L, bool*&& idx)
+	{
+		luaL_error(L, "Not implemented: bool* type as return value.");
+	}
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<int>::CheckArg(lua_State *L, int idx)
 	{
@@ -55,6 +101,27 @@ namespace LuaQt
 	Q_DECL_EXPORT void ArgHelperGeneral<int>::pushRetVal(lua_State *L, int&& idx)
 	{
 		lua_pushinteger(L, idx);
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<int*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT int* ArgHelperGeneral<int*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: int* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<int*>::pushRetVal(lua_State *L, int* const& idx)
+	{
+		luaL_error(L, "Not implemented: int* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<int*>::pushRetVal(lua_State *L, int*&& idx)
+	{
+		luaL_error(L, "Not implemented: int* type as return value.");
 	}
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<unsigned int>::CheckArg(lua_State *L, int idx)
@@ -81,6 +148,30 @@ namespace LuaQt
 		lua_pushinteger(L, idx);
 	}
 
+	Q_DECL_EXPORT bool ArgHelperGeneral<__int64>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isnumber(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT __int64 ArgHelperGeneral<__int64>::GetArg(lua_State *L, int idx)
+	{
+		return lua_tointeger(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<__int64>::pushRetVal(lua_State *L, const __int64& val)
+	{
+		lua_pushinteger(L, val);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<__int64>::pushRetVal(lua_State *L, __int64&& val)
+	{
+		lua_pushinteger(L, val);
+	}
+
 	Q_DECL_EXPORT bool ArgHelperGeneral<double>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_isnumber(L, idx))
@@ -104,16 +195,41 @@ namespace LuaQt
 	{
 		lua_pushnumber(L, idx);
 	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<double*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT double* ArgHelperGeneral<double*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: double* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<double*>::pushRetVal(lua_State *L, double* const& idx)
+	{
+		luaL_error(L, "Not implemented: double* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<double*>::pushRetVal(lua_State *L, double*&& idx)
+	{
+		luaL_error(L, "Not implemented: double* type as return value.");
+	}
 }
 
+#include <QtCore/QUrl>
 #include <QtCore/QStringList>
 namespace LuaQt
 {
 	template class Q_DECL_EXPORT ArgHelperGeneral<char**>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<char const*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<void*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QByteArray>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QString>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QString*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QStringList>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QUrl>;
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<char**>::CheckArg(lua_State *L, int idx)
 	{
@@ -201,6 +317,32 @@ namespace LuaQt
 		lua_pushlightuserdata(L, val);
 	}
 
+	Q_DECL_EXPORT bool ArgHelperGeneral<QByteArray>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isstring(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT QByteArray ArgHelperGeneral<QByteArray>::GetArg(lua_State *L, int idx)
+	{
+		size_t len;
+		const char* data = lua_tolstring(L, idx, &len);
+		return QByteArray(data, len);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QByteArray>::pushRetVal(lua_State *L, QByteArray const& val)
+	{
+		lua_pushlstring(L, val.data(), val.length());
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QByteArray>::pushRetVal(lua_State *L, QByteArray&& val)
+	{
+		lua_pushlstring(L, val.data(), val.length());
+	}
+
 	Q_DECL_EXPORT bool ArgHelperGeneral<QString>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_isstring(L, idx))
@@ -212,17 +354,70 @@ namespace LuaQt
 
 	Q_DECL_EXPORT QString ArgHelperGeneral<QString>::GetArg(lua_State *L, int idx)
 	{
-		return QString::fromUtf8(lua_tostring(L, idx));
+		size_t len;
+		const char* data = lua_tolstring(L, idx, &len);
+		return QString::fromUtf8(data, len);
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<QString>::pushRetVal(lua_State *L, QString const& val)
 	{
-		lua_pushstring(L, val.toUtf8());
+		QByteArray data = val.toUtf8();
+		lua_pushlstring(L, data.data(), data.length());
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<QString>::pushRetVal(lua_State *L, QString&& val)
 	{
-		lua_pushstring(L, val.toUtf8());
+		QByteArray data = val.toUtf8();
+		lua_pushlstring(L, data.data(), data.length());
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QUrl>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isstring(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT QUrl ArgHelperGeneral<QUrl>::GetArg(lua_State *L, int idx)
+	{
+		size_t len;
+		const char* data = lua_tolstring(L, idx, &len);
+		return QUrl(QString::fromUtf8(data, len));
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QUrl>::pushRetVal(lua_State *L, QUrl const& val)
+	{
+		QByteArray data = val.url().toUtf8();
+		lua_pushlstring(L, data.data(), data.length());
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QUrl>::pushRetVal(lua_State *L, QUrl&& val)
+	{
+		QByteArray data = val.url().toUtf8();
+		lua_pushlstring(L, data.data(), data.length());
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QString*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QString* ArgHelperGeneral<QString*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QString* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QString*>::pushRetVal(lua_State *L, QString* const& idx)
+	{
+		luaL_error(L, "Not implemented: QString* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QString*>::pushRetVal(lua_State *L, QString*&& idx)
+	{
+		luaL_error(L, "Not implemented: QString* type as return value.");
 	}
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<QStringList>::CheckArg(lua_State *L, int idx)
@@ -369,10 +564,11 @@ namespace LuaQt{
 	}
 }
 
-
 #include <QtGui/QFont>
+#include <QtGui/QFontInfo>
 namespace LuaQt{
 	template class Q_DECL_EXPORT ArgHelperGeneral<QFont>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QFontInfo>;
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<QFont>::CheckArg(lua_State *L, int idx)
 	{
@@ -394,12 +590,56 @@ namespace LuaQt{
 	{
 		luaL_error(L, "Not implemented: QFont type as return value.");
 	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QFontInfo>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QFontInfo ArgHelperGeneral<QFontInfo>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QFontInfo type as return value.");
+		return QFontInfo(QFont());
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFontInfo>::pushRetVal(lua_State *L, QFontInfo const& val)
+	{
+		luaL_error(L, "Not implemented: QFontInfo type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFontInfo>::pushRetVal(lua_State *L, QFontInfo&& val)
+	{
+		luaL_error(L, "Not implemented: QFontInfo type as return value.");
+	}
 }
 
+#include <QtCore/QRect>
 #include <QtCore/QRectF>
 namespace LuaQt
 {
+	template class Q_DECL_EXPORT ArgHelperGeneral<QRect>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QRectF>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QRect>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QRect ArgHelperGeneral<QRect>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QRect type as return value.");
+		return QRect();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QRect>::pushRetVal(lua_State *L, QRect const& val)
+	{
+		luaL_error(L, "Not implemented: QRect type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QRect>::pushRetVal(lua_State *L, QRect&& val)
+	{
+		luaL_error(L, "Not implemented: QRect type as return value.");
+	}
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<QRectF>::CheckArg(lua_State *L, int idx)
 	{
@@ -503,3 +743,670 @@ namespace LuaQt
 		luaL_error(L, "Not implemented: QGraphicsItem* type as return value.");
 	}
 }
+
+#include <QtCore/QSize>
+#include <QtCore/QSizeF>
+#include <QtCore/QPoint>
+#include <QtCore/QPointF>
+namespace LuaQt
+{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QSize>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QSizeF>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPoint>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPointF>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QPoint>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QPoint ArgHelperGeneral<QPoint>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QPoint type as return value.");
+		return QPoint();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPoint>::pushRetVal(lua_State *L, QPoint const& val)
+	{
+		luaL_error(L, "Not implemented: QPoint type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPoint>::pushRetVal(lua_State *L, QPoint&& val)
+	{
+		luaL_error(L, "Not implemented: QPoint type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QPointF>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QPointF ArgHelperGeneral<QPointF>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QPointF type as return value.");
+		return QPointF();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPointF>::pushRetVal(lua_State *L, QPointF const& val)
+	{
+		luaL_error(L, "Not implemented: QPointF type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPointF>::pushRetVal(lua_State *L, QPointF&& val)
+	{
+		luaL_error(L, "Not implemented: QPoint type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QSize>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QSize ArgHelperGeneral<QSize>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QSize type as return value.");
+		return QSize();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QSize>::pushRetVal(lua_State *L, QSize const& val)
+	{
+		luaL_error(L, "Not implemented: QSize type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QSize>::pushRetVal(lua_State *L, QSize&& val)
+	{
+		luaL_error(L, "Not implemented: QSize type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QSizeF>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QSizeF ArgHelperGeneral<QSizeF>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QSizeF type as return value.");
+		return QSizeF();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QSizeF>::pushRetVal(lua_State *L, QSizeF const& val)
+	{
+		luaL_error(L, "Not implemented: QSizeF type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QSizeF>::pushRetVal(lua_State *L, QSizeF&& val)
+	{
+		luaL_error(L, "Not implemented: QSizeF type as return value.");
+	}
+}
+
+#include <QtCore/QModelIndex>
+namespace LuaQt
+{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QModelIndex>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QModelIndex>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QModelIndex ArgHelperGeneral<QModelIndex>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QModelIndex type as return value.");
+		return QModelIndex();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QModelIndex>::pushRetVal(lua_State *L, QModelIndex const& val)
+	{
+		luaL_error(L, "Not implemented: QModelIndex type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QModelIndex>::pushRetVal(lua_State *L, QModelIndex&& val)
+	{
+		luaL_error(L, "Not implemented: QModelIndex type as return value.");
+	}
+}
+
+#include <QtWidgets/QStyleOptionViewItem>
+#pragma comment(lib, "Qt5Widgets.lib")
+namespace LuaQt
+{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QStyleOptionViewItem>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QStyleOptionViewItem>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QStyleOptionViewItem ArgHelperGeneral<QStyleOptionViewItem>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionViewItem type as return value.");
+		return QStyleOptionViewItem();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleOptionViewItem>::pushRetVal(lua_State *L, QStyleOptionViewItem const& val)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionViewItem type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleOptionViewItem>::pushRetVal(lua_State *L, QStyleOptionViewItem&& val)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionViewItem type as return value.");
+	}
+}
+
+
+#include <QtCore/QEvent>
+namespace LuaQt
+{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QEvent*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QEvent*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QEvent* ArgHelperGeneral<QEvent*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionViewItem type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QEvent*>::pushRetVal(lua_State *L, QEvent* const& val)
+	{
+		luaL_error(L, "Not implemented: QEvent* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QEvent*>::pushRetVal(lua_State *L, QEvent*&& val)
+	{
+		luaL_error(L, "Not implemented: QEvent* type as return value.");
+	}
+}
+
+
+#include <QtGui/QHelpEvent>
+namespace LuaQt
+{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QHelpEvent*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QHelpEvent*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QHelpEvent* ArgHelperGeneral<QHelpEvent*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionViewItem type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QHelpEvent*>::pushRetVal(lua_State *L, QHelpEvent* const& val)
+	{
+		luaL_error(L, "Not implemented: QEvent* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QHelpEvent*>::pushRetVal(lua_State *L, QHelpEvent*&& val)
+	{
+		luaL_error(L, "Not implemented: QEvent* type as return value.");
+	}
+}
+
+#include <QtGui/QFontMetrics>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QFontMetrics>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QFontMetrics>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QFontMetrics ArgHelperGeneral<QFontMetrics>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QFontMetrics type as return value.");
+		return QFontMetrics(QFont());
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFontMetrics>::pushRetVal(lua_State *L, QFontMetrics const& val)
+	{
+		luaL_error(L, "Not implemented: QFontMetrics type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFontMetrics>::pushRetVal(lua_State *L, QFontMetrics&& val)
+	{
+		luaL_error(L, "Not implemented: QFontMetrics type as return value.");
+	}
+}
+
+#include <QtGui/QPainter>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPainter*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QPainter*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QPainter* ArgHelperGeneral<QPainter*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QPainter* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPainter*>::pushRetVal(lua_State *L, QPainter* const& val)
+	{
+		luaL_error(L, "Not implemented: QPainter* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPainter*>::pushRetVal(lua_State *L, QPainter*&& val)
+	{
+		luaL_error(L, "Not implemented: QPainter* type as return value.");
+	}
+}
+
+#include <QtCore/QVariant>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QVariant>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QVariant>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QVariant ArgHelperGeneral<QVariant>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QVariant type as return value.");
+		return QVariant();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QVariant>::pushRetVal(lua_State *L, QVariant const& val)
+	{
+		luaL_error(L, "Not implemented: QVariant type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QVariant>::pushRetVal(lua_State *L, QVariant&& val)
+	{
+		luaL_error(L, "Not implemented: QVariant type as return value.");
+	}
+}
+
+#include <QtGui/QPalette>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPalette>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QPalette>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QPalette ArgHelperGeneral<QPalette>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QPalette type as return value.");
+		return QPalette();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPalette>::pushRetVal(lua_State *L, QPalette const& val)
+	{
+		luaL_error(L, "Not implemented: QPalette type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QPalette>::pushRetVal(lua_State *L, QPalette&& val)
+	{
+		luaL_error(L, "Not implemented: QPalette type as return value.");
+	}
+}
+
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QLayoutItem>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QSpacerItem*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QLayoutItem*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QSpacerItem*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QSpacerItem* ArgHelperGeneral<QSpacerItem*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QSpacerItem* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QSpacerItem*>::pushRetVal(lua_State *L, QSpacerItem* const& val)
+	{
+		luaL_error(L, "Not implemented: QSpacerItem* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QSpacerItem*>::pushRetVal(lua_State *L, QSpacerItem*&& val)
+	{
+		luaL_error(L, "Not implemented: QSpacerItem* type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QLayoutItem*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QLayoutItem* ArgHelperGeneral<QLayoutItem*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QLayoutItem* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QLayoutItem*>::pushRetVal(lua_State *L, QLayoutItem* const& val)
+	{
+		luaL_error(L, "Not implemented: QLayoutItem* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QLayoutItem*>::pushRetVal(lua_State *L, QLayoutItem*&& val)
+	{
+		luaL_error(L, "Not implemented: QLayoutItem* type as return value.");
+	}
+}
+
+#include <QtGui/QTextCharFormat>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextCharFormat>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QTextCharFormat>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QTextCharFormat ArgHelperGeneral<QTextCharFormat>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QTextCharFormat type as return value.");
+		return QTextCharFormat();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QTextCharFormat>::pushRetVal(lua_State *L, QTextCharFormat const& val)
+	{
+		luaL_error(L, "Not implemented: QTextCharFormat type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QTextCharFormat>::pushRetVal(lua_State *L, QTextCharFormat&& val)
+	{
+		luaL_error(L, "Not implemented: QTextCharFormat type as return value.");
+	}
+}
+
+#include <QtWidgets/QStyleOptionComplex>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QStyleOptionComplex const *>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QStyleOptionComplex const *>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QStyleOptionComplex const * ArgHelperGeneral<QStyleOptionComplex const *>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionComplex const * type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleOptionComplex const *>::pushRetVal(lua_State *L, QStyleOptionComplex const * const& val)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionComplex const * type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleOptionComplex const *>::pushRetVal(lua_State *L, QStyleOptionComplex const *&& val)
+	{
+		luaL_error(L, "Not implemented: QStyleOptionComplex const * type as return value.");
+	}
+}
+
+
+#include <QtWidgets/QStyleOption>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QStyleOption const *>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QStyleOption const *>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QStyleOption const * ArgHelperGeneral<QStyleOption const *>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QStyleOption const * type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleOption const *>::pushRetVal(lua_State *L, QStyleOption const * const& val)
+	{
+		luaL_error(L, "Not implemented: QStyleOption const * type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleOption const *>::pushRetVal(lua_State *L, QStyleOption const *&& val)
+	{
+		luaL_error(L, "Not implemented: QStyleOption const * type as return value.");
+	}
+}
+
+#include <QtWidgets/QStyleHintReturn>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QStyleHintReturn*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QStyleHintReturn*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QStyleHintReturn* ArgHelperGeneral<QStyleHintReturn*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QStyleHintReturn* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleHintReturn*>::pushRetVal(lua_State *L, QStyleHintReturn* const& val)
+	{
+		luaL_error(L, "Not implemented: QStyleHintReturn* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QStyleHintReturn*>::pushRetVal(lua_State *L, QStyleHintReturn*&& val)
+	{
+		luaL_error(L, "Not implemented: QStyleHintReturn* type as return value.");
+	}
+}
+
+#include <QtCore/QFileInfo>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QFileInfo>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QFileInfo>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QFileInfo ArgHelperGeneral<QFileInfo>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QFileInfo type as return value.");
+		return QFileInfo();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFileInfo>::pushRetVal(lua_State *L, QFileInfo const& val)
+	{
+		luaL_error(L, "Not implemented: QFileInfo type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFileInfo>::pushRetVal(lua_State *L, QFileInfo&& val)
+	{
+		luaL_error(L, "Not implemented: QFileInfo type as return value.");
+	}
+}
+
+#include <QtWidgets/QFileIconProvider>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QFileIconProvider*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QFileIconProvider*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QFileIconProvider* ArgHelperGeneral<QFileIconProvider*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QFileIconProvider* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFileIconProvider*>::pushRetVal(lua_State *L, QFileIconProvider* const& val)
+	{
+		luaL_error(L, "Not implemented: QFileIconProvider* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QFileIconProvider*>::pushRetVal(lua_State *L, QFileIconProvider*&& val)
+	{
+		luaL_error(L, "Not implemented: QFileIconProvider* type as return value.");
+	}
+}
+
+#include <QtCore/QDir>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QDir>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QDir>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QDir ArgHelperGeneral<QDir>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QDir type as return value.");
+		return QDir();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QDir>::pushRetVal(lua_State *L, QDir const& val)
+	{
+		luaL_error(L, "Not implemented: QDir type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QDir>::pushRetVal(lua_State *L, QDir&& val)
+	{
+		luaL_error(L, "Not implemented: QDir type as return value.");
+	}
+}
+
+#include <QtWidgets\qgraphicseffect.h>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QGraphicsEffectSource*>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QGraphicsEffectSource*>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QGraphicsEffectSource* ArgHelperGeneral<QGraphicsEffectSource*>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QGraphicsEffectSource* type as return value.");
+		return NULL;
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QGraphicsEffectSource*>::pushRetVal(lua_State *L, QGraphicsEffectSource* const& val)
+	{
+		luaL_error(L, "Not implemented: QGraphicsEffectSource* type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QGraphicsEffectSource*>::pushRetVal(lua_State *L, QGraphicsEffectSource*&& val)
+	{
+		luaL_error(L, "Not implemented: QGraphicsEffectSource* type as return value.");
+	}
+}
+
+#include <QtGui/QMatrix>
+#include <QtGui/QMatrix4x4>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QVector3D>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QMatrix>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QMatrix4x4>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QVector3D>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QVector3D ArgHelperGeneral<QVector3D>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QVector3D type as return value.");
+		return QVector3D();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QVector3D>::pushRetVal(lua_State *L, QVector3D const& val)
+	{
+		luaL_error(L, "Not implemented: QVector3D type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QVector3D>::pushRetVal(lua_State *L, QVector3D&& val)
+	{
+		luaL_error(L, "Not implemented: QVector3D type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QMatrix>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QMatrix ArgHelperGeneral<QMatrix>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QMatrix type as return value.");
+		return QMatrix();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QMatrix>::pushRetVal(lua_State *L, QMatrix const& val)
+	{
+		luaL_error(L, "Not implemented: QMatrix type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QMatrix>::pushRetVal(lua_State *L, QMatrix&& val)
+	{
+		luaL_error(L, "Not implemented: QMatrix type as return value.");
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QMatrix4x4>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QMatrix4x4 ArgHelperGeneral<QMatrix4x4>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QMatrix4x4 type as return value.");
+		return QMatrix4x4();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QMatrix4x4>::pushRetVal(lua_State *L, QMatrix4x4 const& val)
+	{
+		luaL_error(L, "Not implemented: QMatrix4x4 type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QMatrix4x4>::pushRetVal(lua_State *L, QMatrix4x4&& val)
+	{
+		luaL_error(L, "Not implemented: QMaQMatrix4x4trix type as return value.");
+	}
+}
+
+#include <QtGui/QBrush>
+namespace LuaQt{
+	template class Q_DECL_EXPORT ArgHelperGeneral<QBrush>;
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<QBrush>::CheckArg(lua_State *L, int idx)
+	{
+		return false;
+	}
+
+	Q_DECL_EXPORT QBrush ArgHelperGeneral<QBrush>::GetArg(lua_State *L, int idx)
+	{
+		luaL_error(L, "Not implemented: QBrush type as return value.");
+		return QBrush();
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QBrush>::pushRetVal(lua_State *L, QBrush const& val)
+	{
+		luaL_error(L, "Not implemented: QBrush type as return value.");
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<QBrush>::pushRetVal(lua_State *L, QBrush&& val)
+	{
+		luaL_error(L, "Not implemented: QBrush type as return value.");
+	}
+}
+

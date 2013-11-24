@@ -49,6 +49,9 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 template<typename Enum>
 class QFlags;
 
+template<class Key, class T>
+class QMap;
+
 // Argument helper functions&macros
 namespace LuaQt
 {
@@ -114,6 +117,72 @@ namespace LuaQt
 		}
 	};
 
+	template <typename T>
+	class ArgHelperQList
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return false;
+		}
+		static QList<T> GetArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return QList<T>();
+		}
+		static void pushRetVal(lua_State*L, const QList<T>& val){
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+		static void pushRetVal(lua_State*L, QList<T>&& val) {
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+	};
+
+	template <typename T>
+	class ArgHelperQVector
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return false;
+		}
+		static QVector<T> GetArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return QVector<T>();
+		}
+		static void pushRetVal(lua_State*L, const QVector<T>& val){
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+		static void pushRetVal(lua_State*L, QVector<T>&& val) {
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+	};
+
+	template <typename KT, typename VT>
+	class ArgHelperQMap
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return false;
+		}
+		static QMap<KT, VT> GetArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return QMap<KT, VT>();
+		}
+		static void pushRetVal(lua_State*L, const QMap<KT, VT>& val){
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+		static void pushRetVal(lua_State*L, QMap<KT, VT>&& val) {
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+	};
+
 	template <typename T, 
 		bool isEnum = std::tr1::is_enum<T>::value,
 		bool isQObjectPtr = is_qobject_ptr<T>::value>
@@ -140,6 +209,24 @@ namespace LuaQt
 	{
 	};
 
+	template <typename T>
+	class ArgHelper<QList<T>, false, false>
+		: public ArgHelperQList<T>
+	{
+	};
+
+	template <typename T>
+	class ArgHelper<QVector<T>, false, false>
+		: public ArgHelperQVector<T>
+	{
+	};
+
+	template <typename KT, typename VT>
+	class ArgHelper<QMap<KT, VT>, false, false>
+		: public ArgHelperQMap<KT, VT>
+	{
+	};
+
 	using std::tr1::remove_reference;
 }
 
@@ -157,5 +244,3 @@ namespace LuaQt
 #define UNPACK__(p) UNPACK_I##p
 #define UNPACK(P) UNPACK__(P)
 #define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<UNPACK(t)>::pushRetVal(L, v)
-
-#include <LuaQT/fix.hpp>

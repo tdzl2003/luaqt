@@ -1,5 +1,7 @@
 #pragma once
 
+#include <LuaQT/globals.hpp>
+
 // fix of some special class
 #include <QtWidgets\qgraphicseffect.h>
 #include <QtWidgets\qmenu.h>
