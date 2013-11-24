@@ -65,18 +65,6 @@ namespace LuaQt
 	};
 
 	template <typename T>
-	struct is_qt_flags
-		: public std::tr1::false_type
-	{
-	};
-
-	template <typename T>
-	struct is_qt_flags<QFlags<T> >
-		: public std::tr1::true_type
-	{
-	};
-
-	template <typename T>
 	class ArgHelperGeneral
 	{
 	public:
@@ -109,22 +97,25 @@ namespace LuaQt
 	{
 	public:
 		static bool CheckArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
 			return false;
 		}
 		static T GetArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
 			return NULL;
 		}
 		static void pushRetVal(lua_State*L, const T& val){
+			luaL_error(L, "Not implemented.");
 			lua_pushnil(L);
 		}
 		static void pushRetVal(lua_State*L, T&& val) {
+			luaL_error(L, "Not implemented.");
 			lua_pushnil(L);
 		}
 	};
 
 	template <typename T, 
 		bool isEnum = std::tr1::is_enum<T>::value,
-		bool isFlag = is_qt_flags<T>::value,
 		bool isQObjectPtr = is_qobject_ptr<T>::value>
 	class ArgHelper
 		: public ArgHelperGeneral<T>
@@ -132,60 +123,37 @@ namespace LuaQt
 	};
 
 	template <typename T>
-	class ArgHelper<T, true, false, false>
+	class ArgHelper<T, true, false>
 		: public ArgHelperEnum<T>
 	{
 	};
 
 	template <typename T>
-	class ArgHelper<T, false, true, false>
-		: public ArgHelperEnum<T>
+	class ArgHelper<QFlags<T>, false, false>
+		: public ArgHelperEnum<QFlags<T>>
 	{
 	};
 
 	template <typename T>
-	class ArgHelper<T, false, false, true>
+	class ArgHelper<T, false, true>
 		: public ArgHelperQObjectPtr<T>
 	{
 	};
 
-	template <typename T>
-	class remove_ref
-	{
-	public:
-		typedef T type;
-	};
-
-	template <typename T>
-	class remove_ref<T&>
-	{
-	public:
-		typedef T type;
-	};
-
-	template <typename T>
-	class remove_ref<const T&>
-	{
-	public:
-		typedef T type;
-	};
-
-	template <typename T>
-	class remove_ref<T&&>
-	{
-	public:
-		typedef T type;
-	};
+	using std::tr1::remove_reference;
 }
 
 #define CHECK_ARG_COUNT(c) if (lua_gettop(L) != c) { break; }
-#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::CheckArg(L, i)) { break;}
-#define GET_ARG(t, i, n) LuaQt::remove_ref<t>::type n = LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::GetArg(L, i)
+#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::CheckArg(L, i)) { break;}
+#define GET_ARG(t, i, n) LuaQt::remove_reference<t>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::GetArg(L, i)
 
 #define CHECK_METHOD_ARG_COUNT(c) if (lua_gettop(L) != c+1) { break; }
-#define CHECK_METHOD_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::CheckArg(L, i+1)) { break;}
-#define GET_METHOD_ARG(t, i, n) LuaQt::remove_ref<t>::type n = LuaQt::ArgHelper<LuaQt::remove_ref<t>::type>::GetArg(L, i+1)
+#define CHECK_METHOD_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::CheckArg(L, i+1)) { break;}
+#define GET_METHOD_ARG(t, i, n) LuaQt::remove_reference<t>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::GetArg(L, i+1)
 
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
-#define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<t>::pushRetVal(L, v)
+#define UNPACK_I(...) __VA_ARGS__
+#define UNPACK__(p) UNPACK_I##p
+#define UNPACK(P) UNPACK__(P)
+#define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<UNPACK(t)>::pushRetVal(L, v)

@@ -175,6 +175,15 @@ local function findNestedName(class, name)
 	end
 end
 
+local function parseNestedName(class, name)
+	return name:gsub("(%:*)(%w+)", function(d, s)
+		if (d == "::") then
+			return
+		end
+		return findNestedName(class, s)
+	end)
+end
+
 local constructorTemplate = loadTemplate("template/constructor.cpp")
 local constructorOLTemplate = loadTemplate("template/constructorol.cpp")
 local methodTemplate = loadTemplate("template/method.cpp")
@@ -202,15 +211,7 @@ local function printMethods(class, name, methods, isConstructor)
 	do
 		for i,v in ipairs(methods) do
 			for j,arg in ipairs(v.arguments) do
-				local tname = findNestedName(class, arg.type.rawName)
-				if (tname) then
-					local t = arg.type
-					if (t.referenceType == "noreference") then
-						arg.normalizedType = tname
-					else
-						error("Not implemented.")
-					end
-				end
+				arg.normalizedType = parseNestedName(class, arg.normalizedType)
 			end
 		end
 	end
@@ -218,6 +219,7 @@ local function printMethods(class, name, methods, isConstructor)
 	local function overloads()
 		local ret = {}
 		for i,v in ipairs(methods) do
+			v.normalizedType = parseNestedName(class, v.normalizedType)
 			table.insert(ret, overloadTemplate(v))
 		end
 		return table.concat(ret, '\n');
@@ -269,7 +271,7 @@ function funcs:methodTable()
 	local ret = {}
 	local methods = getMethodNames(self)
 	for k,v in pairs(methods) do
-		table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'}\n')
+		table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
 	end
 	return table.concat(ret)
 end
@@ -294,10 +296,16 @@ function funcs:depHeaders()
 		end
 	end
 	local ret = {}
+	local mark = {}
 	for k,v in pairs(classes) do
 		local cinfo = loadClassInfo(k)
-		if (cinfo and cinfo.fileName) then
+		if (cinfo and cinfo.fileName and not mark[cinfo.fileName]) then
+			mark[cinfo.fileName] = true
 			table.insert(ret, string.format("#include <%s>\n", cinfo.fileName))
+		end
+		if (includeDir[k]) then
+			mark[includeDir[k]] = true
+			table.insert(ret, string.format("#include <%s>\n", includeDir[k]))
 		end
 	end
 	return table.concat(ret)
@@ -334,7 +342,7 @@ for k,classes in pairs(packages) do
 		-- end
 		assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
 		if (excludeClasses[class]) then
-			print("Excluded.")
+			print("\t\tExcluded.")
 		elseif (info and info.hasQObject and info.name ~= "Qt") then
 			writeClassSource(k, info)
 			table.insert(validClasses, class)

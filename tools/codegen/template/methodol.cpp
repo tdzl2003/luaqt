@@ -27,26 +27,30 @@
 %*/
 		self->/*%return name%*/(
 /*% 
-		local ret = ""
+		local ret = {"\t\t\t"}
 		for i,v in ipairs(arguments) do
-			ret = ret .. string.format("arg%d, ", i)
+			table.insert(ret, string.format("arg%d", i))
+			table.insert(ret, ", ")
 		end
-		return ret:sub(1, -3)
-%*/)
+		table.remove(ret)
+		return (#ret>0) and table.concat(ret) or ""
+%*/
+		)
 /*%
 		if (normalizedType ~= "void") then
-			return "\t\t)"
+			return "\t\t);"
+		else
+			return ";"
 		end
-		return ""
 %*/
 
 		END_ARGREF_FRAME();
 
 /*%
 		if (normalizedType ~= "void") then
-			return "\t\treturn 1"
+			return "\t\treturn 1;"
 		else
-			return "\t\treturn 0"
+			return "\t\treturn 0;"
 		end
 %*/
 	}
