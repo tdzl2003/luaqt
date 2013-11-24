@@ -2,6 +2,7 @@
 	{
 		CHECK_ARG_COUNT(/*%return #arguments+1%*/);
 
+		CHECK_ARG(CLASS*, 1);
 /*% 
 		local ret = ""
 		for i,v in ipairs(arguments) do

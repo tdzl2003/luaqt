@@ -255,6 +255,19 @@ local function getMethodNames(self)
 			end
 		end
 	end
+	for i, v in ipairs(self.slotList) do
+		if (v.access == "public") then
+			local tmp = ret
+			if (v.name:sub(1, 9) == "operator ") then
+				tmp = operators
+			end
+			if (tmp[v.name]) then
+				table.insert(tmp[v.name], v)
+			else
+				tmp[v.name] = {v}
+			end
+		end
+	end
 	return ret
 end
 
