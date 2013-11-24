@@ -121,7 +121,7 @@ namespace LuaQt{
 		if (ref > 0)
         {
             push_weaktable(L);
-            wunref(L, lua_gettop(L)-1, ref);
+            wunref(L, lua_gettop(L), ref);
             lua_pop(L, 1);
         }
 	}

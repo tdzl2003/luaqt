@@ -868,7 +868,6 @@ namespace LuaQt
 }
 
 #include <QtWidgets/QStyleOptionViewItem>
-#pragma comment(lib, "Qt5Widgets.lib")
 namespace LuaQt
 {
 	template class Q_DECL_EXPORT ArgHelperGeneral<QStyleOptionViewItem>;

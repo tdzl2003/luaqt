@@ -37,8 +37,11 @@ namespace LuaQt{
 
 	Q_DECL_EXPORT bool isObject(lua_State *L, int idx, const char* className)
 	{
+		if (!lua_istable(L, idx)){
+			return false;
+		}
 		lua_getfield(L, idx, className);
-		bool ret = lua_islightuserdata(L, idx);
+		bool ret = lua_islightuserdata(L, -1);
 		lua_pop(L, 1);
 		return ret;
 	}
@@ -79,26 +82,31 @@ namespace LuaQt{
 	static void onDestroyed(QObject* obj)
 	{
 		QLuaQtUserData* userData = (QLuaQtUserData*) obj->userData(0);
+		obj->setUserData(0, NULL);
+
 		assert(userData);
 		lua_State *L = userData->L;
-		getweakref(L, userData->lua_ref);
+		int ref = userData->lua_ref;
+		getweakref(L, ref);
+		delete userData;
 
 		if (lua_isnil(L, -1)){
-			weakunref(L, userData->lua_ref);
-			userData->lua_ref = LUA_REFNIL;
+			weakunref(L, ref);
+			//TODO: clean lightuserdata pointer in table.
+
+			//remove gcer.
+			lua_pushliteral(L, "__gcer");
+			lua_rawget(L, -2);
+			QObject** ppobj = (QObject**)lua_touserdata(L, 1);
+			*ppobj = NULL;
 			lua_pop(L, 1);
-			return;
+
+			weakunref(L, userData->lua_ref);
+
+			lua_pop(L, 1);
+		} else {
+			lua_pop(L, 1);
 		}
-		//TODO: clean lightuserdata pointer in table.
-
-		//remove gcer.
-		lua_pushliteral(L, "__gcer");
-		lua_rawget(L, -2);
-		QObject** ppobj = (QObject**)lua_touserdata(L, 1);
-		*ppobj = NULL;
-		lua_pop(L, 1);
-
-		weakunref(L, userData->lua_ref);
 	}
 
 	static int gcer(lua_State *L)

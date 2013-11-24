@@ -117,6 +117,7 @@ namespace LuaQt
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPolygonF>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QLineF>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QTextBlock>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPicture>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPicture const *>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QBitmap>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPixmap const *>;
