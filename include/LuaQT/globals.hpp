@@ -157,3 +157,5 @@ namespace LuaQt
 #define UNPACK__(p) UNPACK_I##p
 #define UNPACK(P) UNPACK__(P)
 #define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<UNPACK(t)>::pushRetVal(L, v)
+
+#include <LuaQT/fix.hpp>

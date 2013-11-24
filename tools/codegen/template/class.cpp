@@ -25,6 +25,7 @@
 ****************************************************************************/
 
 #include <LuaQt/globals.hpp>
+#include <LuaQt/fix.hpp>
 #include </*%return fileName%*/>
 
 /*%

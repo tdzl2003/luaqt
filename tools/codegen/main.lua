@@ -303,9 +303,10 @@ function funcs:depHeaders()
 			mark[cinfo.fileName] = true
 			table.insert(ret, string.format("#include <%s>\n", cinfo.fileName))
 		end
-		if (includeDir[k]) then
-			mark[includeDir[k]] = true
-			table.insert(ret, string.format("#include <%s>\n", includeDir[k]))
+		if (config.classIncludePath[k]) then
+			local fn = config.classIncludePath[k]
+			mark[fn] = true
+			table.insert(ret, string.format("#include <%s>\n", fn))
 		end
 	end
 	return table.concat(ret)

@@ -2,5 +2,7 @@
 	"excludeClasses": [
 		"QMacCocoaViewContainer",
 		"QMacNativeWidget"
-	]
+	],
+	"classIncludePath": {
+	}
 }
