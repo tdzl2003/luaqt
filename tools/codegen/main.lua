@@ -325,6 +325,50 @@ function funcs:depHeaders()
 	return table.concat(ret)
 end
 
+local casterTemplate = loadTemplate("template/caster.cpp")
+function generateCasters(self, ret, route)
+	if (#route > 1) then
+		table.insert(ret, casterTemplate({
+				route = route,
+				class = self,
+			}))
+	end
+	for i,v in ipairs(self.superclassList) do
+		if (v.access == "public") then
+			table.insert(route, v.name)
+			generateCasters(loadClassInfo(v.name), ret, route)
+			table.remove(route)
+		end
+	end
+end
+
+function generateCasterList(self, ret, route)
+	if (#route > 1) then
+		table.insert(ret, string.format(
+				'\t{"%s", %s},\n'
+			, route[#route], table.concat(route, '_')))
+	end
+	for i,v in ipairs(self.superclassList) do
+		if (v.access == "public") then
+			table.insert(route, v.name)
+			generateCasterList(loadClassInfo(v.name), ret, route)
+			table.remove(route)
+		end
+	end
+end
+
+function funcs:casters()
+	local ret = {}
+	generateCasters(self, ret, {self.classname})
+	return table.concat(ret)
+end
+
+function funcs:casterList()
+	local ret = {}
+	generateCasterList(self, ret, {self.classname})
+	return table.concat(ret)
+end
+
 local classTemplate = loadTemplate("template/class.cpp")
 local function writeClassSource(packageName, class)
 	class.isAbstract = isAbstractClass(class)

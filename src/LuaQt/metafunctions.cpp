@@ -41,6 +41,16 @@ namespace LuaQt
 		}
 		lua_pop(L, 1);
 
+		//try getter
+		lua_pushvalue(L, 2);
+		lua_rawget(L, lua_upvalueindex(2));
+		if (!lua_isnil(L, -1))
+		{
+			lua_pushvalue(L, 1);
+			lua_call(L, 1, 1);
+			return 1;
+		}
+
 		lua_pushnil(L);
 		return 1;
 	}

@@ -47,6 +47,10 @@ return depHeaders()
 return methodImpls()
 %*/
 
+/*%
+return casters()
+%*/
+
 static luaL_Reg methods[] = {
 /*%
 	return methodTable()
@@ -55,6 +59,9 @@ static luaL_Reg methods[] = {
 };
 
 static luaL_Reg getters[] = {
+/*%
+	return casterList()
+%*/
 	{NULL, NULL}
 };
 
@@ -85,7 +92,8 @@ void luadef_/*%return classname%*/(lua_State *L)
 	// register meta table.
 	if (!luaL_newmetatable(L, CLASS_NAME)) 
 	{
-		luaL_error(L, "Metatable "CLASS_NAME" has been registered.");
+		// luaL_error(L, "Metatable "CLASS_NAME" has been registered.");
+		return;
 	}
 
 	luaL_newlib(L, methods);	
