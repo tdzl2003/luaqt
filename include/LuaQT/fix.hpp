@@ -29,9 +29,15 @@
 #include <LuaQT/globals.hpp>
 
 // fix of some special class
-#include <QtWidgets\qgraphicseffect.h>
-#include <QtWidgets\qmenu.h>
-#include <QtWidgets\qmenubar.h>
+#include <QtCore/QProcess>
+#include <QtWidgets/qgraphicseffect.h>
+#include <QtWidgets/qmenu.h>
+#include <QtWidgets/qmenubar.h>
+#include <QtGui/QWindow>
+#include <QtGui/QTextObject>
+#include <QtGui/QScreen>
+#include <QtGui/QOffscreenSurface>
+#include <QtGui/QGuiApplication>
 namespace LuaQt{
 	template <>
 	struct is_qobject_ptr<QGraphicsEffectSource*>
@@ -47,6 +53,42 @@ namespace LuaQt{
 
 	template <>
 	struct is_qobject_ptr<QPlatformMenuBar*>
+		: public std::tr1::false_type
+	{
+	};
+
+	template <>
+	struct is_qobject_ptr<_PROCESS_INFORMATION*>
+		: public std::tr1::false_type
+	{
+	};
+
+	template <>
+	struct is_qobject_ptr<QPlatformWindow*>
+		: public std::tr1::false_type
+	{
+	};
+
+	template <>
+	struct is_qobject_ptr<QTextDocumentPrivate*>
+		: public std::tr1::false_type
+	{
+	};
+		
+	template <>
+	struct is_qobject_ptr<QPlatformScreen*>
+		: public std::tr1::false_type
+	{
+	};
+
+	template <>
+	struct is_qobject_ptr<QPlatformOffscreenSurface*>
+		: public std::tr1::false_type
+	{
+	};
+
+	template <>
+	struct is_qobject_ptr<QPlatformNativeInterface*>
 		: public std::tr1::false_type
 	{
 	};

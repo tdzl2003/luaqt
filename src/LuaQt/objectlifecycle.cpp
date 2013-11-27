@@ -101,8 +101,6 @@ namespace LuaQt{
 			*ppobj = NULL;
 			lua_pop(L, 1);
 
-			weakunref(L, userData->lua_ref);
-
 			lua_pop(L, 1);
 		} else {
 			lua_pop(L, 1);

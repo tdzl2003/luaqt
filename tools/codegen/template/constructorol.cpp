@@ -5,7 +5,7 @@
 /*% 
 		local ret = ""
 		for i,v in ipairs(arguments) do
-			ret = ret .. string.format("        CHECK_ARG(%s, %d);\n", v.normalizedType, i)
+			ret = ret .. string.format("        CHECK_ARG((%s), %d);\n", v.normalizedType, i)
 		end
 		return ret
 %*/
@@ -13,7 +13,7 @@
 /*% 
 		local ret = ""
 		for i,v in ipairs(arguments) do
-			ret = ret .. string.format("        GET_ARG(%s, %d, arg%d);\n", v.normalizedType, i, i)
+			ret = ret .. string.format("        GET_ARG((%s), %d, arg%d);\n", v.normalizedType, i, i)
 		end
 		return ret
 %*/

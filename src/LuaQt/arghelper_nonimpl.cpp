@@ -65,6 +65,30 @@
 #include <QtWidgets/QTableWidgetSelectionRange>
 #include <QtCore/QLocale>
 #include <QtWidgets/QUndoCommand>
+#include <QtCore/QAbstractNativeEventFilter>
+#include <QtCore/QItemSelection>
+#include <QtCore/QByteArray>
+
+#include <QtCore/QFile>
+#include <QtCore/QJsonObject>
+#include <QtCore/QRegExp>
+#include <QtCore/QEasingcurve>
+
+#include <QtGui/QAbstractTextDocumentLayout>
+#include <QtGui/QAccessibleBridgePlugin>
+#include <QtGui/QAccessiblePlugin>
+#include <QtGui/QClipboard>
+#include <QtGui/QGuiApplication>
+#include <QtGui/QIconEnginePlugin>
+#include <QtGui/QImageIOPlugin>
+#include <QtGui/QOffscreenSurface>
+#include <QtGui/QRegularExpressionValidator>
+#include <QtGui/QScreen>
+#include <QtGui/QStandardItemModel>
+#include <QtGui/QTextDocument>
+#include <QtGui/QWindow>
+#include <QtGui/QtExtTable>
+#include <QtGui/QTextFormat>
 
 namespace LuaQt
 {
@@ -93,6 +117,22 @@ namespace LuaQt
 		luaL_error(L, "Not implemented");
 	}
 
+	template class Q_DECL_EXPORT ArgHelperGeneral<long*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned char*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned char const*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<char*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<char>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QChar>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<void const *>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<bool*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<int*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QAbstractNativeEventFilter*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QItemSelection>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QJsonObject>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QRegExp>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QEasingCurve>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<_iobuf *>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QByteArray*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPaintDevice*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<enum QFormLayout::ItemRole *>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QStyleOptionGraphicsItem const *>;
@@ -119,6 +159,7 @@ namespace LuaQt
 	template class Q_DECL_EXPORT ArgHelperGeneral<QTextBlock>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPicture>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPicture const *>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPicture *>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QBitmap>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QPixmap const *>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QItemEditorFactory>;
@@ -144,4 +185,36 @@ namespace LuaQt
 	template class Q_DECL_EXPORT ArgHelperGeneral<QUndoCommand const *>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QUndoCommand *>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<QBackingStore *>;
+
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextObjectInterface*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QAccessibleBridge*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QAccessibleInterface*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QImage>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPlatformNativeInterface*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QCursor*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QIconEngine*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QImageIOHandler*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QSurfaceFormat>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPlatformOffscreenSurface*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPlatformScreen*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QRegularExpression>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QStandardItem*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QStandardItem const*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextCursor*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QAbstractUndoItem*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextOption>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextFormat>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextFrameFormat>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextListFormat>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextTableFormat>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextTableCell>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextDocumentPrivate*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QTextFrameLayoutData*>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<QPlatformWindow*>;
 }
+
+void Q_DECL_EXPORT QSurface_initMethods(lua_State *L){}
+void Q_DECL_EXPORT QGraphicsItem_initMethods(lua_State *L){}
+void Q_DECL_EXPORT QGraphicsLayoutItem_initMethods(lua_State *L){}
+void Q_DECL_EXPORT QLayoutItem_initMethods(lua_State *L){}
+void Q_DECL_EXPORT QPaintDevice_initMethods(lua_State *L){}

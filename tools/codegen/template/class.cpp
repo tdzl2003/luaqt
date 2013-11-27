@@ -58,6 +58,17 @@ static luaL_Reg methods[] = {
 	{NULL, NULL}
 };
 
+/*%
+	return declareInitSuperMethods()
+%*/
+Q_DECL_EXPORT void /*%return classname%*/_initMethods(lua_State *L)
+{
+/*%
+	return initSuperMethods()
+%*/
+	luaL_regfuncs(L, methods, sizeof(methods)/sizeof(luaL_Reg) - 1);
+}
+
 static luaL_Reg getters[] = {
 /*%
 	return casterList()
@@ -96,7 +107,10 @@ void luadef_/*%return classname%*/(lua_State *L)
 		return;
 	}
 
-	luaL_newlib(L, methods);	
+	//luaL_newlib(L, methods);	
+	lua_createtable(L, 0, 0);
+	/*%return classname%*/_initMethods(L);
+
 	luaL_newlib(L, getters);
 	lua_pushcclosure(L, LuaQt::General_index, 2);
 	lua_setfield(L, -2, "__index");

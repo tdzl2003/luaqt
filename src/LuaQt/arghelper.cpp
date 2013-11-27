@@ -30,11 +30,11 @@
 namespace LuaQt
 {
 	template class Q_DECL_EXPORT ArgHelperGeneral<bool>;
-	template class Q_DECL_EXPORT ArgHelperGeneral<bool*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<int>;
-	template class Q_DECL_EXPORT ArgHelperGeneral<int*>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned int>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned long>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<__int64>;
+	template class Q_DECL_EXPORT ArgHelperGeneral<long>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<double>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<double*>;
 
@@ -56,27 +56,6 @@ namespace LuaQt
 	Q_DECL_EXPORT void ArgHelperGeneral<bool>::pushRetVal(lua_State *L, bool&& idx)
 	{
 		lua_pushboolean(L, idx);
-	}
-
-	Q_DECL_EXPORT bool ArgHelperGeneral<bool*>::CheckArg(lua_State *L, int idx)
-	{
-		return false;
-	}
-
-	Q_DECL_EXPORT bool* ArgHelperGeneral<bool*>::GetArg(lua_State *L, int idx)
-	{
-		luaL_error(L, "Not implemented: bool* type as return value.");
-		return NULL;
-	}
-
-	Q_DECL_EXPORT void ArgHelperGeneral<bool*>::pushRetVal(lua_State *L, bool* const& idx)
-	{
-		luaL_error(L, "Not implemented: bool* type as return value.");
-	}
-
-	Q_DECL_EXPORT void ArgHelperGeneral<bool*>::pushRetVal(lua_State *L, bool*&& idx)
-	{
-		luaL_error(L, "Not implemented: bool* type as return value.");
 	}
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<int>::CheckArg(lua_State *L, int idx)
@@ -103,27 +82,6 @@ namespace LuaQt
 		lua_pushinteger(L, idx);
 	}
 
-	Q_DECL_EXPORT bool ArgHelperGeneral<int*>::CheckArg(lua_State *L, int idx)
-	{
-		return false;
-	}
-
-	Q_DECL_EXPORT int* ArgHelperGeneral<int*>::GetArg(lua_State *L, int idx)
-	{
-		luaL_error(L, "Not implemented: int* type as return value.");
-		return NULL;
-	}
-
-	Q_DECL_EXPORT void ArgHelperGeneral<int*>::pushRetVal(lua_State *L, int* const& idx)
-	{
-		luaL_error(L, "Not implemented: int* type as return value.");
-	}
-
-	Q_DECL_EXPORT void ArgHelperGeneral<int*>::pushRetVal(lua_State *L, int*&& idx)
-	{
-		luaL_error(L, "Not implemented: int* type as return value.");
-	}
-
 	Q_DECL_EXPORT bool ArgHelperGeneral<unsigned int>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_isnumber(L, idx))
@@ -148,6 +106,30 @@ namespace LuaQt
 		lua_pushinteger(L, idx);
 	}
 
+	Q_DECL_EXPORT bool ArgHelperGeneral<unsigned long>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isnumber(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT unsigned long ArgHelperGeneral<unsigned long>::GetArg(lua_State *L, int idx)
+	{
+		return lua_tointeger(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<unsigned long>::pushRetVal(lua_State *L, const unsigned long& idx)
+	{
+		lua_pushinteger(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<unsigned long>::pushRetVal(lua_State *L, unsigned long&& idx)
+	{
+		lua_pushinteger(L, idx);
+	}
+
 	Q_DECL_EXPORT bool ArgHelperGeneral<__int64>::CheckArg(lua_State *L, int idx)
 	{
 		if (lua_isnumber(L, idx))
@@ -168,6 +150,30 @@ namespace LuaQt
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<__int64>::pushRetVal(lua_State *L, __int64&& val)
+	{
+		lua_pushinteger(L, val);
+	}
+
+	Q_DECL_EXPORT bool ArgHelperGeneral<long>::CheckArg(lua_State *L, int idx)
+	{
+		if (lua_isnumber(L, idx))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	Q_DECL_EXPORT long ArgHelperGeneral<long>::GetArg(lua_State *L, int idx)
+	{
+		return lua_tointeger(L, idx);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<long>::pushRetVal(lua_State *L, const long& val)
+	{
+		lua_pushinteger(L, val);
+	}
+
+	Q_DECL_EXPORT void ArgHelperGeneral<long>::pushRetVal(lua_State *L, long&& val)
 	{
 		lua_pushinteger(L, val);
 	}

@@ -32,6 +32,12 @@ class QFlags;
 template<class Key, class T>
 class QMap;
 
+template<class Key, class T>
+class QHash;
+
+template<class Key>
+class QSet;
+
 // Argument helper functions&macros
 namespace LuaQt
 {
@@ -167,6 +173,50 @@ namespace LuaQt
 			lua_pushnil(L);
 		}
 	};
+	
+	template <typename KT, typename VT>
+	class ArgHelperQHash
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return false;
+		}
+		static QHash<KT, VT> GetArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return QHash<KT, VT>();
+		}
+		static void pushRetVal(lua_State*L, const QHash<KT, VT>& val){
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+		static void pushRetVal(lua_State*L, QHash<KT, VT>&& val) {
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+	};
+
+	template <typename KT>
+	class ArgHelperQSet
+	{
+	public:
+		static bool CheckArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return false;
+		}
+		static QSet<KT> GetArg(lua_State *L, int idx){
+			luaL_error(L, "Not implemented.");
+			return QSet<KT>();
+		}
+		static void pushRetVal(lua_State*L, const QSet<KT>& val){
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+		static void pushRetVal(lua_State*L, QSet<KT>&& val) {
+			luaL_error(L, "Not implemented.");
+			lua_pushnil(L);
+		}
+	};
 
 	template <typename T, 
 		bool isEnum = std::tr1::is_enum<T>::value,
@@ -209,6 +259,18 @@ namespace LuaQt
 	template <typename KT, typename VT>
 	class ArgHelper<QMap<KT, VT>, false, false>
 		: public ArgHelperQMap<KT, VT>
+	{
+	};
+
+	template <typename KT, typename VT>
+	class ArgHelper<QHash<KT, VT>, false, false>
+		: public ArgHelperQHash<KT, VT>
+	{
+	};
+
+	template <typename KT>
+	class ArgHelper<QSet<KT>, false, false>
+		: public ArgHelperQSet<KT>
 	{
 	};
 

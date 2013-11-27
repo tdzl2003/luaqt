@@ -1,6 +1,6 @@
 int /*%return table.concat(route, '_')%*/(lua_State *L)
 {
-	CLASS* obj1 = LuaQt::checkObject(L, 1, CLASS_NAME);
+	CLASS* obj1 = (CLASS*)LuaQt::checkObject(L, 1, CLASS_NAME);
 /*%
 	local ret = {}
 	for i = 2, #route do

@@ -36,6 +36,12 @@ for i,v in ipairs(config.excludeClasses) do
 	excludeClasses[v] = true
 end
 
+local excludedIncludePath = {}
+for i,v in ipairs(config.excludedIncludePath) do
+	excludedIncludePath[v] = true
+end
+
+
 local function loadTemplate(path)
 	local fd = io.open(path)
 	local src = fd:read("*a")
@@ -271,11 +277,26 @@ local function getMethodNames(self)
 	return ret
 end
 
+local function getExcludedMethods(self)
+	local excludedMethods = config.excludedMethods[self.classname]
+	if (not excludedMethods) then
+		return {}
+	end
+	local ret = {}
+	for i,v in ipairs(excludedMethods) do
+		ret[v] = true
+	end
+	return ret
+end
+
 function funcs:methodImpls()
 	local ret = {}
 	local methods = getMethodNames(self)
+	local excludedMethods = getExcludedMethods(self)
 	for k,v in pairs(methods) do
-		table.insert(ret, printMethods(self, self.classname..'_'..k, v, false))
+		if (not excludedMethods[k]) then
+			table.insert(ret, printMethods(self, self.classname..'_'..k, v, false))
+		end
 	end
 	return table.concat(ret, '\n')
 end
@@ -283,8 +304,11 @@ end
 function funcs:methodTable()
 	local ret = {}
 	local methods = getMethodNames(self)
+	local excludedMethods = getExcludedMethods(self)
 	for k,v in pairs(methods) do
-		table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
+		if (not excludedMethods[k]) then
+			table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
+		end
 	end
 	return table.concat(ret)
 end
@@ -312,12 +336,14 @@ function funcs:depHeaders()
 	local mark = {}
 	for k,v in pairs(classes) do
 		local cinfo = loadClassInfo(k)
-		if (cinfo and cinfo.fileName and not mark[cinfo.fileName]) then
-			mark[cinfo.fileName] = true
-			table.insert(ret, string.format("#include <%s>\n", cinfo.fileName))
+		local fn = cinfo and cinfo.fileName:gsub("%\\", "/")
+		if (cinfo and fn and not mark[fn] and not excludedIncludePath[fn]) then
+			mark[fn] = true
+			table.insert(ret, string.format("#include <%s>\n", fn))
 		end
-		if (config.classIncludePath[k]) then
-			local fn = config.classIncludePath[k]
+
+		fn = config.classIncludePath[k]
+		if (fn and not mark[fn]) then
 			mark[fn] = true
 			table.insert(ret, string.format("#include <%s>\n", fn))
 		end
@@ -366,6 +392,26 @@ end
 function funcs:casterList()
 	local ret = {}
 	generateCasterList(self, ret, {self.classname})
+	return table.concat(ret)
+end
+
+function funcs:declareInitSuperMethods()
+	local ret = {}
+	for i = #self.superclassList, 1, -1 do
+		if (self.superclassList[i].access == "public") then
+			table.insert(ret, string.format("void %s_initMethods(lua_State *L);\n", self.superclassList[i].name))
+		end
+	end
+	return table.concat(ret)
+end
+
+function funcs:initSuperMethods()
+	local ret = {}
+	for i = #self.superclassList, 1, -1 do
+		if (self.superclassList[i].access == "public") then
+			table.insert(ret, string.format("\t%s_initMethods(L);\n", self.superclassList[i].name))
+		end
+	end
 	return table.concat(ret)
 end
 

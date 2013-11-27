@@ -47,17 +47,14 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
 #define STR(x) #x
 
-#define CHECK_ARG_COUNT(c) if (lua_gettop(L) != c) { break; }
-#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::CheckArg(L, i)) { break;}
-#define GET_ARG(t, i, n) LuaQt::remove_reference<t>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::GetArg(L, i)
-
-#define CHECK_METHOD_ARG_COUNT(c) if (lua_gettop(L) != c+1) { break; }
-#define CHECK_METHOD_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::CheckArg(L, i+1)) { break;}
-#define GET_METHOD_ARG(t, i, n) LuaQt::remove_reference<t>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<t>::type>::GetArg(L, i+1)
-
-#define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
-#define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
 #define UNPACK_I(...) __VA_ARGS__
 #define UNPACK__(p) UNPACK_I##p
 #define UNPACK(P) UNPACK__(P)
+
+#define CHECK_ARG_COUNT(c) if (lua_gettop(L) != c) { break; }
+#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::CheckArg(L, i)) { break;}
+#define GET_ARG(t, i, n) LuaQt::remove_reference<UNPACK(t)>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::GetArg(L, i)
+
+#define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
+#define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
 #define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<UNPACK(t)>::pushRetVal(L, v)

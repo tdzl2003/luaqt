@@ -2,20 +2,20 @@
 	{
 		CHECK_ARG_COUNT(/*%return #arguments+1%*/);
 
-		CHECK_ARG(CLASS*, 1);
+		CHECK_ARG((CLASS*), 1);
 /*% 
 		local ret = ""
 		for i,v in ipairs(arguments) do
-			ret = ret .. string.format("        CHECK_ARG(%s, %d);\n", v.normalizedType, i+1)
+			ret = ret .. string.format("        CHECK_ARG((%s), %d);\n", v.normalizedType, i+1)
 		end
 		return ret
 %*/
 		START_ARGREF_FRAME();
-		GET_ARG(CLASS*, 1, self);
+		GET_ARG((CLASS*), 1, self);
 /*% 
 		local ret = ""
 		for i,v in ipairs(arguments) do
-			ret = ret .. string.format("        GET_ARG(%s, %d, arg%d);\n", v.normalizedType, i+1, i)
+			ret = ret .. string.format("        GET_ARG((%s), %d, arg%d);\n", v.normalizedType, i+1, i)
 		end
 		return ret
 %*/

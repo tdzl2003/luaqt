@@ -1,7 +1,44 @@
 {
 	"excludeClasses": [
 		"QMacCocoaViewContainer",
-		"QMacNativeWidget"
+		"QMacNativeWidget",
+		"QVariantAnimation",
+		"QPropertyAnimation",
+		"QSettings",
+		"QTemporaryFile",
+		"QThread",
+		"QThreadPool",
+		"QProcess",
+		"QBBSystemLocaleData",
+		"QOpenGLVertexArrayObject",
+		"QOpenGLShaderProgram",
+		"QOpenGLShader",
+		"QOpenGLDebugLogger",
+		"QOpenGLContextGroup",
+		"QOpenGLContext",
+		"QPdfWriter"
+	],
+	"excludedMethods":{
+		"QObject":[
+			"findChild",
+			"findChildren",
+			"userData",
+			"setUserData",
+			"disconnect",
+			"connect",
+			"connect_functor"
+		],
+		"QLibrary": [
+			"resolve"
+		],
+		"QTextFrame":[
+			"begin",
+			"end"
+		]
+	},
+	"excludedIncludePath":[
+		"QtCore/qobjectdefs_impl.h",
+		"QtCore/qobject_impl.h"
 	],
 	"classIncludePath": {
 	}
