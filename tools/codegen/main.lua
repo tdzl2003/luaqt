@@ -249,12 +249,12 @@ local function getMethodNames(self)
 	local ret = {}
 	local operators = {}
 	for i, v in ipairs(self.methodList) do
-		if (v.access == "public") then
+		if (v.access == "public" and not v.isStatic) then
 			local tmp = ret
 			if (v.name:sub(1, 9) == "operator ") then
 				tmp = operators
 			end
-			if (tmp[v.name]) then
+			if (tmp[v.name] and not v.isStatic) then
 				table.insert(tmp[v.name], v)
 			else
 				tmp[v.name] = {v}
@@ -301,6 +301,15 @@ function funcs:methodImpls()
 	return table.concat(ret, '\n')
 end
 
+function funcs:declareExtraMethods()
+	local ret = {}
+	local methods = config.extraMethods[self.classname] or {}
+	for i,v in ipairs(methods) do
+		table.insert(ret, string.format("int %s_%s(lua_State *L);", self.classname, v))
+	end
+	return table.concat(ret, '\n')
+end
+
 function funcs:methodTable()
 	local ret = {}
 	local methods = getMethodNames(self)
@@ -309,6 +318,9 @@ function funcs:methodTable()
 		if (not excludedMethods[k]) then
 			table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
 		end
+	end
+	for i,k in pairs(config.extraMethods[self.classname] or {}) do
+		table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
 	end
 	return table.concat(ret)
 end

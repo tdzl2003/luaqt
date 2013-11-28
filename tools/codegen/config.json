@@ -36,6 +36,11 @@
 			"end"
 		]
 	},
+	"extraMethods":{
+		"QObject": [
+			"connect"
+		]
+	}
 	"excludedIncludePath":[
 		"QtCore/qobjectdefs_impl.h",
 		"QtCore/qobject_impl.h"

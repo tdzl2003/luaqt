@@ -51,6 +51,10 @@ return methodImpls()
 return casters()
 %*/
 
+/*%
+	return declareExtraMethods()
+%*/
+
 static luaL_Reg methods[] = {
 /*%
 	return methodTable()
