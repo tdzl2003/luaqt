@@ -98,7 +98,7 @@ namespace LuaQt
 			//luaL_error(L, "Not implemented.");
 			return (T*)checkObject(L, idx, T::staticMetaObject.className());
 		}
-		static void pushRetVal(lua_State*L, const T*& val){
+		static void pushRetVal(lua_State*L,  T* const& val){
 			luaL_error(L, "Not implemented.");
 			lua_pushnil(L);
 		}

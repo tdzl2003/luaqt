@@ -28,8 +28,6 @@
 
 #include <QtCore/qobject.h>
 
-#define CHECK_LUAFUNCTION_ARG(t, i) if (lua_iscfunction(L, i) || !lua_isfunction(L, i)) { break;}
-
 int QObject_connect(lua_State *L)
 {
 	for (;;)
@@ -43,13 +41,12 @@ int QObject_connect(lua_State *L)
 
 		START_ARGREF_FRAME();
 		GET_ARG((QObject*), 1, self);
-		GET_ARG((QObject*), 2, arg1);
-		GET_ARG((const char*), 3, arg2);
-		GET_ARG((const char*), 4, arg3);
+		GET_ARG((QObject*), 2, sender);
+		GET_ARG((const char*), 3, signal);
+		GET_ARG((const char*), 4, slot);
 
-
-		self->connect(arg1, arg2, arg3);
-
+		self->connect(sender, signal, slot);
+		
 		END_ARGREF_FRAME();
 
 		return 0;
@@ -57,14 +54,24 @@ int QObject_connect(lua_State *L)
 
 	for (;;)
 	{
-		CHECK_ARG_COUNT(4);
-
+		CHECK_ARG_COUNT(3);
 		CHECK_ARG((QObject*), 1);
-		CHECK_ARG((QObject*), 2);
-		CHECK_ARG((const char*), 3);
-		CHECK_ARG((const char*), 4);
-	}
+		CHECK_ARG((const char*), 2);
+		CHECK_LUAFUNCTION_ARG(3);
 
+		lua_pushvalue(L, 2);
+		lua_gettable(L, 1);
+		if (lua_isnil(L, -1))
+		{
+			GET_ARG((const char*), 2, signal);
+			luaL_error(L, "Cannot find signal %s", signal);
+			return 0;
+		}
+		lua_pushvalue(L, 1);
+		lua_pushvalue(L, 3);
+		lua_call(L, 2, 1);
+		return 1;
+	}
 
 	return luaL_error(L, "No valid overload found.");
 }

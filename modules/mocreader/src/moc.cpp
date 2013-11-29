@@ -880,11 +880,6 @@ void Moc::parseSlots(ClassDef *def, FunctionDef::Access access)
             ++def->revisionedMethods;
         }
         def->slotList += funcDef;
-        while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-            funcDef.wasCloned = true;
-            funcDef.arguments.removeLast();
-            def->slotList += funcDef;
-        }
     }
 }
 
@@ -936,11 +931,6 @@ void Moc::parseSignals(ClassDef *def)
             ++def->revisionedMethods;
         }
         def->signalList += funcDef;
-        while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-            funcDef.wasCloned = true;
-            funcDef.arguments.removeLast();
-            def->signalList += funcDef;
-        }
     }
 }
 
@@ -1309,11 +1299,6 @@ void Moc::parseSlotInPrivate(ClassDef *def, FunctionDef::Access access)
     funcDef.access = access;
     parseFunction(&funcDef, true);
     def->slotList += funcDef;
-    while (funcDef.arguments.size() > 0 && funcDef.arguments.last().isDefault) {
-        funcDef.wasCloned = true;
-        funcDef.arguments.removeLast();
-        def->slotList += funcDef;
-    }
     if (funcDef.revision > 0)
         ++def->revisionedMethods;
 

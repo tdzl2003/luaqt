@@ -26,38 +26,55 @@
 
 #pragma once
 
-#include <type_traits>
-
-#include <QtCore/qcompilerdetection.h>
-
 #include <lua.hpp>
-#include <LuaQt/luaqt.hpp>
-#include <LuaQt/arghelper.hpp>
-#include <LuaQt/callback.hpp>
+#include <LuaQT/luaqt.hpp>
 
-// Utility functions
-inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
+namespace LuaQt
 {
-	for (size_t i =0; i < count; ++i)
+	class generic_callback
 	{
-		lua_pushcfunction(L, reg[i].func);
-		lua_setfield(L, -2, reg[i].name);
-	}
+	public:
+		generic_callback(lua_State *_L)
+		{
+			L = getGlobalState(_L);
+			ref = lua_ref(L, true);
+		}
+		~generic_callback()
+		{
+			if (ref != LUA_REFNIL && ref != LUA_NOREF) {
+				lua_unref(L, true);
+			}
+		}
+		generic_callback(generic_callback&& other){
+			L = other.L;
+			ref = other.ref;
+			other.ref = LUA_REFNIL;
+		}
+		void operator = (generic_callback&& other){
+			L = other.L;
+			ref = other.ref;
+			other.ref = LUA_REFNIL;
+		}
+		generic_callback(const generic_callback& other)
+		{
+			L = other.L;
+			lua_getref(L, other.ref);
+			ref = lua_ref(L, true);
+		}
+		void operator = (const generic_callback& other)
+		{
+			L = other.L;
+			lua_getref(L, other.ref);
+			ref = lua_ref(L, true);
+		}
+		void push()
+		{
+			lua_getref(L, ref);
+		}
+	protected:
+		lua_State *L;
+		int ref;
+	private:
+		
+	};
 }
-
-#define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
-#define STR(x) #x
-
-#define UNPACK_I(...) __VA_ARGS__
-#define UNPACK__(p) UNPACK_I##p
-#define UNPACK(P) UNPACK__(P)
-
-#define CHECK_ARG_COUNT(c) if (lua_gettop(L) != c) { break; }
-#define CHECK_ARG(t, i) if (!LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::CheckArg(L, i)) { break;}
-#define GET_ARG(t, i, n) LuaQt::remove_reference<UNPACK(t)>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::GetArg(L, i)
-
-#define CHECK_LUAFUNCTION_ARG(i) if (lua_iscfunction(L, i) || !lua_isfunction(L, i)) { break;}
-
-#define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
-#define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
-#define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::pushRetVal(L, v)

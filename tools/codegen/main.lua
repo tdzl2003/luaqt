@@ -325,6 +325,47 @@ function funcs:methodTable()
 	return table.concat(ret)
 end
 
+local signalTemplate = loadTemplate("template/signalimpl.cpp")
+function funcs:signalImpls()
+	local ret = {}
+	for i,v in ipairs(self.signalList) do
+		if (not v.isPrivateSignal) then
+			v = copyTable(v)
+			v.id = i
+			v.class = self
+			v.type.rawName = parseNestedName(self, v.type.rawName)
+			for i,arg in ipairs(v.arguments) do
+				arg.type.rawName = parseNestedName(self, arg.type.rawName)
+			end
+			table.insert(ret, signalTemplate(v))
+		end
+	end
+	return table.concat(ret, '\n')
+end
+
+function signalName(self)
+	local args = {}
+	for i,v in ipairs(self.arguments) do
+		table.insert(args, v.type.rawName)
+	end
+
+	return string.format("2%s(%s)", self.name, table.concat(args, ", "))
+end
+
+function funcs:signalTable()
+	local ret = {}
+	for i,v in ipairs(self.signalList) do
+		if (not v.isPrivateSignal) then
+			local v = copyTable(v)
+			table.insert(ret, string.format('\t{"%s", signal_%s_%d},', signalName(v), self.classname, i))
+			while (#v.arguments>0 and table.remove(v.arguments).isDefault) do
+				table.insert(ret, string.format('\t{"%s", signal_%s_%d},', signalName(v), self.classname, i))
+			end
+		end
+	end
+	return table.concat(ret, '\n')
+end
+
 function funcs:depHeaders()
 	local classes = {}
 	for i,v in ipairs(self.constructorList) do

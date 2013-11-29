@@ -44,11 +44,15 @@ return depHeaders()
 %*/
 
 /*%
-return methodImpls()
+	return methodImpls()
 %*/
 
 /*%
-return casters()
+	return signalImpls()
+%*/
+
+/*%
+	return casters()
 %*/
 
 /*%
@@ -58,6 +62,9 @@ return casters()
 static luaL_Reg methods[] = {
 /*%
 	return methodTable()
+%*/
+/*%
+	return signalTable()
 %*/
 	{NULL, NULL}
 };
