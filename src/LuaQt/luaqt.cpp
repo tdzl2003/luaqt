@@ -80,7 +80,7 @@ static int luaqt_defineMetaObject(lua_State *L)
 
 	for (size_t i = 0; i < datalen; i++){
 		lua_rawgeti(L, 2, i+1);
-		data[i] = lua_tointeger(L, -1);
+		metadata[i] = lua_tointeger(L, -1);
 		lua_pop(L, 1);
 	}
 
@@ -91,11 +91,12 @@ static int luaqt_defineMetaObject(lua_State *L)
 			size_t len;
 			const char* str = luaL_checklstring(L, -1, &len);
 			memcpy(ptr, str, len);
+			QByteArrayData tmp = {
+					Q_REFCOUNT_INITIALIZE_STATIC, len, 0, 0, reinterpret_cast<char*>(ptr) - reinterpret_cast<char*>(stringdata+i)
+			};
+			stringdata[i] = tmp;
 			ptr += len;
 			*(ptr++) = 0;
-			QByteArrayData tmp = {
-					Q_REFCOUNT_INITIALIZE_STATIC, len, 0, 0, sizeof(QByteArray)*(strcount - i) + (ptr-strings)
-			};
 			lua_pop(L, 1);
 		}
 	}

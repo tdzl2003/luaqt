@@ -37,6 +37,9 @@ namespace LuaQt{
 
 	Q_DECL_EXPORT bool isObject(lua_State *L, int idx, const char* className)
 	{
+		if (lua_isnil(L, idx)){
+			return true;
+		}
 		if (!lua_istable(L, idx)){
 			return false;
 		}
@@ -48,6 +51,9 @@ namespace LuaQt{
 
 	Q_DECL_EXPORT void* checkObject(lua_State *L, int idx, const char* className)
 	{
+		if (lua_isnil(L, idx)){
+			return NULL;
+		}
 		if (!lua_istable(L, idx)){
 			luaL_error(L, "Argument %d is not a `%s` object.", idx, className);
 		}
@@ -90,7 +96,7 @@ namespace LuaQt{
 		getweakref(L, ref);
 		delete userData;
 
-		if (lua_isnil(L, -1)){
+		if (lua_istable(L, -1)){
 			weakunref(L, ref);
 			//TODO: clean lightuserdata pointer in table.
 
@@ -98,7 +104,9 @@ namespace LuaQt{
 			lua_pushliteral(L, "__gcer");
 			lua_rawget(L, -2);
 			QObject** ppobj = (QObject**)lua_touserdata(L, 1);
-			*ppobj = NULL;
+			if (ppobj) {
+				*ppobj = NULL;
+			}
 			lua_pop(L, 1);
 
 			lua_pop(L, 1);

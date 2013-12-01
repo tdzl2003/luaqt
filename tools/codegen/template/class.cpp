@@ -111,6 +111,8 @@ static luaL_Reg statics[] = {
 
 void luadef_/*%return classname%*/(lua_State *L)
 {
+	luaL_newlib(L, statics);
+
 	// register meta table.
 	if (!luaL_newmetatable(L, CLASS_NAME)) 
 	{
@@ -121,8 +123,9 @@ void luadef_/*%return classname%*/(lua_State *L)
 	//luaL_newlib(L, methods);	
 	lua_createtable(L, 0, 0);
 	/*%return classname%*/_initMethods(L);
+	
 	lua_pushvalue(L, -1);
-	lua_setfield(L, -3, "methods");
+	lua_setfield(L, -4, "methods");
 
 	luaL_newlib(L, getters);
 	lua_pushcclosure(L, LuaQt::General_index, 2);
@@ -138,6 +141,5 @@ void luadef_/*%return classname%*/(lua_State *L)
 	lua_pop(L, 1);
 
 	// register static table.
-	luaL_newlib(L, statics);
 	lua_setglobal(L, CLASS_NAME);
 }

@@ -57,6 +57,8 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 #define GET_ARG(t, i, n) LuaQt::remove_reference<UNPACK(t)>::type n = LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::GetArg(L, i)
 
 #define CHECK_LUAFUNCTION_ARG(i) if (lua_iscfunction(L, i) || !lua_isfunction(L, i)) { break;}
+#define CHECK_USERDATA_ARG(i) if (!lua_isuserdata(L, i)) {break;}
+#define GET_USERDATA(t, i, n) UNPACK(t) n = reinterpret_cast<UNPACK(t)>(lua_touserdata(L, i));
 
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
