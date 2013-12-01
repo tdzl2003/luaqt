@@ -275,4 +275,5 @@ namespace LuaQt
 	};
 
 	using std::tr1::remove_reference;
+	using std::tr1::remove_const;
 }

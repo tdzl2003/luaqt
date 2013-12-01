@@ -121,6 +121,8 @@ void luadef_/*%return classname%*/(lua_State *L)
 	//luaL_newlib(L, methods);	
 	lua_createtable(L, 0, 0);
 	/*%return classname%*/_initMethods(L);
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -3, "methods");
 
 	luaL_newlib(L, getters);
 	lua_pushcclosure(L, LuaQt::General_index, 2);

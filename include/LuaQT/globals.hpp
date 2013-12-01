@@ -60,4 +60,4 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
-#define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<LuaQt::remove_reference<UNPACK(t)>::type>::pushRetVal(L, v)
+#define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<LuaQt::remove_const<LuaQt::remove_reference<UNPACK(t)>::type>::type>::pushRetVal(L, v)

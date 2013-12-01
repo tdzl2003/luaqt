@@ -289,6 +289,18 @@ local function getExcludedMethods(self)
 	return ret
 end
 
+local function getExcludedSignals(self)
+	local excludedSignals = config.excludedSignals[self.classname]
+	if (not excludedSignals) then
+		return {}
+	end
+	local ret = {}
+	for i,v in ipairs(excludedSignals) do
+		ret[v] = true
+	end
+	return ret
+end
+
 function funcs:methodImpls()
 	local ret = {}
 	local methods = getMethodNames(self)
@@ -325,24 +337,6 @@ function funcs:methodTable()
 	return table.concat(ret)
 end
 
-local signalTemplate = loadTemplate("template/signalimpl.cpp")
-function funcs:signalImpls()
-	local ret = {}
-	for i,v in ipairs(self.signalList) do
-		if (not v.isPrivateSignal) then
-			v = copyTable(v)
-			v.id = i
-			v.class = self
-			v.type.rawName = parseNestedName(self, v.type.rawName)
-			for i,arg in ipairs(v.arguments) do
-				arg.type.rawName = parseNestedName(self, arg.type.rawName)
-			end
-			table.insert(ret, signalTemplate(v))
-		end
-	end
-	return table.concat(ret, '\n')
-end
-
 function signalName(self)
 	local args = {}
 	for i,v in ipairs(self.arguments) do
@@ -352,14 +346,44 @@ function signalName(self)
 	return string.format("2%s(%s)", self.name, table.concat(args, ", "))
 end
 
-function funcs:signalTable()
+local signalTemplate = loadTemplate("template/signalimpl.cpp")
+function funcs:signalImpls()
 	local ret = {}
+	local excludes = getExcludedSignals(self)
+	
 	for i,v in ipairs(self.signalList) do
 		if (not v.isPrivateSignal) then
-			local v = copyTable(v)
-			table.insert(ret, string.format('\t{"%s", signal_%s_%d},', signalName(v), self.classname, i))
-			while (#v.arguments>0 and table.remove(v.arguments).isDefault) do
-				table.insert(ret, string.format('\t{"%s", signal_%s_%d},', signalName(v), self.classname, i))
+			v = copyTable(v)
+			local name = signalName(v)
+			if (excludes[name] or excludes[v.name]) then
+			else
+				v.id = i
+				v.class = self
+				v.type.rawName = parseNestedName(self, v.type.rawName)
+				for i,arg in ipairs(v.arguments) do
+					arg.type.rawName = parseNestedName(self, arg.type.rawName)
+				end
+				table.insert(ret, signalTemplate(v))
+			end
+		end
+	end
+	return table.concat(ret, '\n')
+end
+
+function funcs:signalTable()
+	local ret = {}
+	local excludes = getExcludedSignals(self)
+
+	for i,v in ipairs(self.signalList) do
+		if (not v.isPrivateSignal) then
+			v = copyTable(v)
+			local name = signalName(v)
+			if (excludes[name] or excludes[v.name]) then
+			else
+				table.insert(ret, string.format('\t{"%s", signal_%s_%d},', name, self.classname, i))
+				while (#v.arguments>0 and table.remove(v.arguments).isDefault) do
+					table.insert(ret, string.format('\t{"%s", signal_%s_%d},', signalName(v), self.classname, i))
+				end
 			end
 		end
 	end

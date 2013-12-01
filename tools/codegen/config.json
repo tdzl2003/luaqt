@@ -36,6 +36,12 @@
 			"end"
 		]
 	},
+	"excludedSignals":{
+		"QGuiApplication":[
+			"2commitDataRequest(QSessionManager &)",
+			"2saveStateRequest(QSessionManager &)"
+		]
+	},
 	"extraMethods":{
 		"QObject": [
 			"connect"

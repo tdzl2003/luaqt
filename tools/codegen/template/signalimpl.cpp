@@ -13,7 +13,7 @@ public:
 local ret = {}
 	for i,v in ipairs(arguments) do
 		table.insert(ret, string.format("%s arg%d", 
-			v.normalizedType, 
+			v.type.rawName, 
 			i
 		))
 	end
@@ -25,7 +25,7 @@ return table.concat(ret, ', ')
 local ret = {}
 	for i,v in ipairs(arguments) do
 		table.insert(ret, string.format("\t\tPUSH_RET_VAL((%s), arg%d);", 
-			v.normalizedType,
+			v.type.rawName,
 			i
 		))
 	end
