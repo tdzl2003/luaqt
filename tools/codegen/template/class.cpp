@@ -113,6 +113,9 @@ void luadef_/*%return classname%*/(lua_State *L)
 {
 	luaL_newlib(L, statics);
 
+	lua_pushlightuserdata(L, const_cast<void*>(reinterpret_cast<const void*>(&CLASS::staticMetaObject)));
+	lua_setfield(L, -2, "_metaObject");
+
 	// register meta table.
 	if (!luaL_newmetatable(L, CLASS_NAME)) 
 	{
@@ -128,6 +131,9 @@ void luadef_/*%return classname%*/(lua_State *L)
 	lua_setfield(L, -4, "methods");
 
 	luaL_newlib(L, getters);
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -5, "getters");
+
 	lua_pushcclosure(L, LuaQt::General_index, 2);
 	lua_setfield(L, -2, "__index");
 

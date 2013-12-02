@@ -71,6 +71,12 @@ namespace LuaQt
 		{
 			lua_getref(L, ref);
 		}
+
+		lua_State *getState()
+		{
+			return L;
+		}
+
 	protected:
 		lua_State *L;
 		int ref;

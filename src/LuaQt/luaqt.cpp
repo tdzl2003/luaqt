@@ -25,7 +25,9 @@
 ****************************************************************************/
 
 #include <LuaQt/globals.hpp>
+#include <LuaQt/callback.hpp>
 #include <QtCore/QMetaType>
+#include <QtCore/QObject>
 
 #include <string>
 #include <vector>
@@ -43,7 +45,7 @@ static int luaqt_getTypeId(lua_State *L)
 
 static void null_qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-
+	
 }
 
 static int luaqt_defineMetaObject(lua_State *L)
@@ -57,6 +59,7 @@ static int luaqt_defineMetaObject(lua_State *L)
 		totallen += lua_objlen(L, -1) +1;
 		lua_pop(L, 1);
 	}
+	LuaQt::generic_callback* metaCall = new LuaQt::generic_callback(L);
 
 	size_t datalen = lua_objlen(L, 2);
 	char* data = (char*)lua_newuserdata(L, sizeof(QMetaObject) + sizeof(uint)*datalen + sizeof(QByteArrayData)*strcount + totallen );
@@ -68,12 +71,14 @@ static int luaqt_defineMetaObject(lua_State *L)
 
 	{
 		QMetaObject defineobj = {
-			reinterpret_cast<QMetaObject*>(lua_touserdata(L, 3)),
-			stringdata, 
-			metadata, 
-			NULL,
-			0,
-			0
+			{
+				reinterpret_cast<QMetaObject*>(lua_touserdata(L, 3)),
+				stringdata, 
+				metadata, 
+				NULL,
+				0,
+				metaCall
+			}
 		};
 		*obj = defineobj;
 	}
