@@ -43,12 +43,12 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\include\;C:\Work\test\luajit\LuaJIT-2.0.2\src;C:\Users\Yun\Documents\GitHub\luaqt\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\lib;C:\Work\test\luajit\LuaJIT-2.0.2\src;$(LibraryPath)</LibraryPath>
-    <OutDir>C:\Work\test\lqt\test</OutDir>
+    <OutDir>C:\Work\test\lqt\test\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\include\;C:\Work\test\luajit\LuaJIT-2.0.2\src;C:\Users\Yun\Documents\GitHub\luaqt\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Work\test\luajit\LuaJIT-2.0.2\src;C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Qt\Qt5.1.0x86\5.1.0\msvc2012\lib;C:\Work\test\luajit\LuaJIT-2.0.2\src;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -57,11 +57,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;QTWIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>lua51.lib;Qt5Widgets.lib;Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;Qt5Widgetsd.lib;Qt5Cored.lib;Qt5Guid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -75,23 +78,156 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;QTWIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>lua51.lib;Qt5Widgets.lib;Qt5Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lua51.lib;Qt5Widgets.lib;Qt5Core.lib;Qt5Gui.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\gen\QtWidgets\defQApplication.cpp" />
-    <ClCompile Include="..\..\..\gen\QtWidgets\QtWidgets.cpp" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LuaQt\LuaQt.vcxproj">
       <Project>{e9475b57-809c-45e3-bf23-a1ab6e4fa900}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\QtCore\QtCore.vcxproj">
+      <Project>{c60a8c7f-a125-4bfc-8a76-816cec49c139}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\QtGui\QtGui.vcxproj">
+      <Project>{bece0d68-d875-4fb9-a7d9-0acf47920a46}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAbstractButton.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAbstractItemDelegate.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAbstractItemView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAbstractScrollArea.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAbstractSlider.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAbstractSpinBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQAction.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQActionGroup.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQApplication.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQBoxLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQButtonGroup.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQCalendarWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQCheckBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQColorDialog.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQColumnView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQComboBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQCommandLinkButton.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQCommonStyle.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQCompleter.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDataWidgetMapper.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDateEdit.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDateTimeEdit.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDesktopWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDial.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDialog.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDialogButtonBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDirModel.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDockWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQDoubleSpinBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQErrorMessage.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFileDialog.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFileSystemModel.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFocusFrame.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFontComboBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFontDialog.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFormLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQFrame.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGesture.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsAnchor.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsBlurEffect.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsColorizeEffect.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsDropShadowEffect.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsEffect.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsItemAnimation.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsObject.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsOpacityEffect.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsProxyWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsRotation.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsScale.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsScene.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsTextItem.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsTransform.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGraphicsWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGridLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQGroupBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQHBoxLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQHeaderView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQInputDialog.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQItemDelegate.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQKeyEventTransition.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQLabel.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQLCDNumber.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQLineEdit.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQListView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQListWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMainWindow.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMdiArea.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMdiSubWindow.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMenu.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMenuBar.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMessageBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQMouseEventTransition.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQPanGesture.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQPinchGesture.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQPlainTextDocumentLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQPlainTextEdit.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQProgressBar.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQProgressDialog.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQProxyStyle.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQPushButton.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQRadioButton.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQRubberBand.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQScrollArea.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQScrollBar.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQScroller.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQShortcut.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSizeGrip.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSlider.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSpinBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSplashScreen.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSplitter.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSplitterHandle.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQStackedLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQStackedWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQStatusBar.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQStyle.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQStyledItemDelegate.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQStylePlugin.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSwipeGesture.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQSystemTrayIcon.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTabBar.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTableView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTableWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTabWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTapAndHoldGesture.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTapGesture.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTextBrowser.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTextEdit.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTimeEdit.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQToolBar.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQToolBox.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQToolButton.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTreeView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQTreeWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQUndoGroup.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQUndoStack.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQUndoView.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQVBoxLayout.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQWidget.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQWidgetAction.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQWizard.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\defQWizardPage.cpp" />
+    <ClCompile Include="..\..\..\gen\QtWidgets\QtWidgets.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

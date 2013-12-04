@@ -194,15 +194,21 @@ local constructorTemplate = loadTemplate("template/constructor.cpp")
 local constructorOLTemplate = loadTemplate("template/constructorol.cpp")
 local methodTemplate = loadTemplate("template/method.cpp")
 local methodOLTemplate = loadTemplate("template/methodol.cpp")
-local function printMethods(class, name, methods, isConstructor)
+local extendedConstructorTemplate = loadTemplate("template/constructorext.cpp")
+local extendedConstructorOLTemplate = loadTemplate("template/constructorextol.cpp")
+local function printMethods(class, name, methods, isConstructor, isExtended)
 	local template = isConstructor and constructorTemplate or methodTemplate
 	local overloadTemplate = isConstructor and constructorOLTemplate or methodOLTemplate
+
+	if (isExtended) then
+		template, overloadTemplate = extendedConstructorTemplate, extendedConstructorOLTemplate
+	end
 
 	do
 		local genMethods = {}
 
 		for i,v in ipairs(methods) do
-			table.insert(genMethods, v)
+			table.insert(genMethods, copyTable(v))
 			while (#v.arguments >0 and v.arguments[#v.arguments].isDefault) do
 				v = copyTable(v)
 				table.remove(v.arguments)
@@ -243,6 +249,51 @@ local funcs = {}
 
 function funcs:constructors()
 	return printMethods(self, self.classname..'_constructor', self.constructorList, true)
+end
+
+local extendedImpl = loadTemplate("template/extendedimpl.cpp")
+local extendedImplOl = loadTemplate("template/extendedimplol.cpp")
+function funcs:extendedImpl()
+	local function constructorOverloads()
+		local methods = self.constructorList
+
+		do
+			local genMethods = {}
+			for i,v  in ipairs(methods) do
+				table.insert(genMethods, copyTable(v))
+				while (#v.arguments >0 and v.arguments[#v.arguments].isDefault) do
+					v = copyTable(v)
+					table.remove(v.arguments)
+					table.insert(genMethods, v)
+				end
+			end
+			methods = genMethods
+		end
+		do
+			for i,v in ipairs(methods) do
+				for j,arg in ipairs(v.arguments) do
+					arg.type.rawName = parseNestedName(self, arg.type.rawName)
+				end
+			end
+		end
+
+		local ret = {}
+		for i,v in ipairs(methods) do
+			table.insert(ret, extendedImplOl({
+				class = self,
+				func = v,
+			}))
+		end
+		return table.concat(ret, '\n');
+	end
+	return extendedImpl({
+			class = self,
+			constructorOverloads = constructorOverloads
+		})
+end
+
+function funcs:extendedConstructor()
+	return printMethods(self, self.classname..'_constructorWithExtend', self.constructorList, true, true)
 end
 
 local function getMethodNames(self)

@@ -44,6 +44,22 @@ return depHeaders()
 %*/
 
 /*%
+	if (not isAbstract) then
+		return extendedImpl()
+	else
+		return ""
+	end
+%*/
+
+/*%
+	if (not isAbstract) then
+		return extendedConstructor()
+	else
+		return ""
+	end
+%*/
+
+/*%
 	return methodImpls()
 %*/
 
@@ -95,6 +111,13 @@ static luaL_Reg statics[] = {
 /*%
 	if (not isAbstract) then
 		return '\t{"new", ' .. classname .. '_constructor},'
+	else
+		return ""
+	end
+%*/
+/*%
+	if (not isAbstract) then
+		return '\t{"newExtended", ' .. classname .. '_constructorWithExtend},'
 	else
 		return ""
 	end
