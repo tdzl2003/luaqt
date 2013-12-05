@@ -75,6 +75,10 @@ return depHeaders()
 	return declareExtraMethods()
 %*/
 
+/*%
+	return staticMethodsImpls()
+%*/
+
 static luaL_Reg methods[] = {
 /*%
 	return methodTable()
@@ -121,6 +125,9 @@ static luaL_Reg statics[] = {
 	else
 		return ""
 	end
+%*/
+/*%
+	return staticMethodsTable()
 %*/
 	{NULL, NULL}
 };

@@ -214,6 +214,16 @@ function helper.defineQtClass(mo)
 		methods[v.name] = v.func
 	end
 
+	for i,v in ipairs(mo.slotList) do
+		methods[v.name] = v.func
+	end
+
+	for i,v in ipairs(mo.signalList) do
+		methods[v.name] = function(self)
+			LuaQt.activate(self, _metaObject, i-1, {})
+		end
+	end
+
 	mo.__index = function(t, k)
 		return (getters[k] and getters[k](t)) or methods[k]
 	end

@@ -32,6 +32,9 @@
 #include <string>
 #include <vector>
 
+#include <QtCore/QObject>
+#include <QtCore/QMetaObject>
+
 static int luaqt_getTypeId(lua_State *L)
 {
 	const char* tn = luaL_checkstring(L, 1);
@@ -110,9 +113,34 @@ static int luaqt_defineMetaObject(lua_State *L)
 	return 1;
 }
 
+static int luaqt_activateSignal(lua_State *L)
+{
+	for (;;)
+	{
+		CHECK_ARG_COUNT(4);
+		CHECK_ARG((QObject*), 1);
+		CHECK_USERDATA_ARG(2);
+		CHECK_ARG((int), 3);
+
+		START_ARGREF_FRAME();
+		GET_ARG((QObject*), 1, arg1);
+		GET_USERDATA((const QMetaObject*), 2, arg2);
+		GET_ARG((int), 3, arg3);
+
+		void *_a[] = { 0 };
+		QMetaObject::activate(arg1, arg2, arg3, _a);
+
+		END_ARGREF_FRAME();
+		return 0;
+	}
+
+	return luaL_error(L, "No valid overloads found");
+}
+
 static luaL_Reg luaqt_lib[] = {
 	{"getTypeId", luaqt_getTypeId},
 	{"defineMetaObject", luaqt_defineMetaObject},
+	{"activate", luaqt_activateSignal},
 	{NULL, NULL}
 };
 

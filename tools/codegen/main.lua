@@ -194,19 +194,23 @@ local function parseNestedName(class, name)
 	end)
 end
 
-local constructorTemplate = loadTemplate("template/constructor.cpp")
-local constructorOLTemplate = loadTemplate("template/constructorol.cpp")
-local methodTemplate = loadTemplate("template/method.cpp")
-local methodOLTemplate = loadTemplate("template/methodol.cpp")
-local extendedConstructorTemplate = loadTemplate("template/constructorext.cpp")
-local extendedConstructorOLTemplate = loadTemplate("template/constructorextol.cpp")
-local function printMethods(class, name, methods, isConstructor, isExtended)
-	local template = isConstructor and constructorTemplate or methodTemplate
-	local overloadTemplate = isConstructor and constructorOLTemplate or methodOLTemplate
+local methodTemplates = {}
+local methodOLTemplates = {}
 
-	if (isExtended) then
-		template, overloadTemplate = extendedConstructorTemplate, extendedConstructorOLTemplate
-	end
+methodTemplates.constructor = loadTemplate("template/constructor.cpp")
+methodOLTemplates.constructor = loadTemplate("template/constructorol.cpp")
+methodTemplates.method = loadTemplate("template/method.cpp")
+methodOLTemplates.method = loadTemplate("template/methodol.cpp")
+methodTemplates.extended = loadTemplate("template/constructorext.cpp")
+methodOLTemplates.extended = loadTemplate("template/constructorextol.cpp")
+methodTemplates.static = loadTemplate("template/staticmethod.cpp")
+methodOLTemplates.static = loadTemplate("template/staticmethodol.cpp")
+
+local function printMethods(class, catalog, name, methods)
+	local template = methodTemplates[catalog]
+	local overloadTemplate = methodOLTemplates[catalog]
+	-- local template = isConstructor and constructorTemplate or methodTemplate
+	-- local overloadTemplate = isConstructor and constructorOLTemplate or methodOLTemplate
 
 	do
 		local genMethods = {}
@@ -252,7 +256,7 @@ end
 local funcs = {}
 
 function funcs:constructors()
-	return printMethods(self, self.classname..'_constructor', self.constructorList, true)
+	return printMethods(self, "constructor", self.classname..'_constructor', self.constructorList)
 end
 
 local extendedImpl = loadTemplate("template/extendedimpl.cpp")
@@ -306,35 +310,51 @@ function funcs:extendedConstructor()
 				name = self.classname..'_constructorWithExtend'
 			})
 	end
-	return printMethods(self, self.classname..'_constructorWithExtend', self.constructorList, true, true)
+	return printMethods(self, "extended", self.classname..'_constructorWithExtend', self.constructorList)
 end
 
-local function getMethodNames(self)
+local function getMethodNames(self, isStatic)
+	isStatic = isStatic or false
 	local ret = {}
 	local operators = {}
 	for i, v in ipairs(self.methodList) do
-		if (v.access == "public" and not v.isStatic) then
+		if (v.access == "public" and v.isStatic == isStatic) then
 			local tmp = ret
 			if (v.name:sub(1, 9) == "operator ") then
 				tmp = operators
 			end
-			if (tmp[v.name] and not v.isStatic) then
+			if (tmp[v.name] and v.isStatic == isStatic) then
 				table.insert(tmp[v.name], v)
 			else
 				tmp[v.name] = {v}
 			end
 		end
 	end
-	for i, v in ipairs(self.slotList) do
-		if (v.access == "public") then
-			local tmp = ret
-			if (v.name:sub(1, 9) == "operator ") then
-				tmp = operators
+	if (not isStatic) then
+		for i, v in ipairs(self.slotList) do
+			if (v.access == "public") then
+				local tmp = ret
+				if (v.name:sub(1, 9) == "operator ") then
+					tmp = operators
+				end
+				if (tmp[v.name]) then
+					table.insert(tmp[v.name], v)
+				else
+					tmp[v.name] = {v}
+				end
 			end
-			if (tmp[v.name]) then
-				table.insert(tmp[v.name], v)
-			else
-				tmp[v.name] = {v}
+		end
+		for i, v in ipairs(self.signalList) do
+			if (v.access == "public") then
+				local tmp = ret
+				if (v.name:sub(1, 9) == "operator ") then
+					tmp = operators
+				end
+				if (tmp[v.name]) then
+					table.insert(tmp[v.name], v)
+				else
+					tmp[v.name] = {v}
+				end
 			end
 		end
 	end
@@ -371,7 +391,7 @@ function funcs:methodImpls()
 	local excludedMethods = getExcludedMethods(self)
 	for k,v in pairs(methods) do
 		if (not excludedMethods[k]) then
-			table.insert(ret, printMethods(self, self.classname..'_'..k, v, false))
+			table.insert(ret, printMethods(self, "method", self.classname..'_'..k, v))
 		end
 	end
 	return table.concat(ret, '\n')
@@ -397,6 +417,30 @@ function funcs:methodTable()
 	end
 	for i,k in pairs(config.extraMethods[self.classname] or {}) do
 		table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
+	end
+	return table.concat(ret)
+end
+
+function funcs:staticMethodsImpls()
+	local ret = {}
+	local methods = getMethodNames(self, true)
+	local excludedMethods = getExcludedMethods(self)
+	for k,v in pairs(methods) do
+		if (not excludedMethods[k]) then
+			table.insert(ret, printMethods(self, "static", self.classname..'_static_'..k, v))
+		end
+	end
+	return table.concat(ret, '\n')
+end
+
+function funcs:staticMethodsTable()
+	local ret = {}
+	local methods = getMethodNames(self, true)
+	local excludedMethods = getExcludedMethods(self)
+	for k,v in pairs(methods) do
+		if (not excludedMethods[k]) then
+			table.insert(ret, '\t{"'..k..'", '..self.classname..'_static_'..k..'},\n')
+		end
 	end
 	return table.concat(ret)
 end
