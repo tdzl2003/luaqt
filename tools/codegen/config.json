@@ -16,7 +16,8 @@
 		"QOpenGLDebugLogger",
 		"QOpenGLContextGroup",
 		"QOpenGLContext",
-		"QPdfWriter"
+		"QPdfWriter",
+		"Qt"
 	],
 	"excludedMethods":{
 		"QObject":[
@@ -36,6 +37,12 @@
 			"end"
 		]
 	},
+	"noExtendedClass":[
+		"QClipboard",
+		"QInputMethod",
+		"QSessionManager",
+		"QScroller"
+	],
 	"excludedSignals":{
 		"QGuiApplication":[
 			"2commitDataRequest(QSessionManager &)",
@@ -46,7 +53,7 @@
 		"QObject": [
 			"connect"
 		]
-	}
+	},
 	"excludedIncludePath":[
 		"QtCore/qobjectdefs_impl.h",
 		"QtCore/qobject_impl.h"

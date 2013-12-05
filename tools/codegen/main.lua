@@ -41,6 +41,10 @@ for i,v in ipairs(config.excludedIncludePath) do
 	excludedIncludePath[v] = true
 end
 
+local noExtendedClass = {}
+for i,v in ipairs(config.noExtendedClass) do
+	noExtendedClass[v] = true
+end
 
 local function loadTemplate(path)
 	local fd = io.open(path)
@@ -254,6 +258,9 @@ end
 local extendedImpl = loadTemplate("template/extendedimpl.cpp")
 local extendedImplOl = loadTemplate("template/extendedimplol.cpp")
 function funcs:extendedImpl()
+	if (noExtendedClass[self.classname]) then
+		return ""
+	end
 	local function constructorOverloads()
 		local methods = self.constructorList
 
@@ -292,7 +299,13 @@ function funcs:extendedImpl()
 		})
 end
 
+local constructorext_noext = loadTemplate("template/constructorext_noext.cpp")
 function funcs:extendedConstructor()
+	if (noExtendedClass[self.classname]) then
+		return constructorext_noext({
+				name = self.classname..'_constructorWithExtend'
+			})
+	end
 	return printMethods(self, self.classname..'_constructorWithExtend', self.constructorList, true, true)
 end
 
