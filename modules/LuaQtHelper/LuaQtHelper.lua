@@ -188,6 +188,10 @@ local function defineMetaCall(mo)
 end
 
 function helper.defineQtClass(mo)
+	mo.signalList = mo.signalList or {}
+	mo.slotList = mo.slotList or {}
+	mo.methodList = mo.methodList or {}
+	
 	local stringData, metaData = buildMetaInfo(mo)
 
 	local _metaObject = LuaQt.defineMetaObject(
@@ -230,18 +234,15 @@ function helper.defineQtClass(mo)
 
 	local creator = mo.constructor
 	function mo.new(...)
-		return creator(_metaObject, ...)
+		local ret = creator(_metaObject, ...)
+		setmetatable(ret, mo)
+		return ret
 	end
 	function mo.newExtended(mo, ...)
 		return creator(mo, ...)
 	end
 
 	return mo
-end
-
-function helper.newQtObject(mo, org)
-	setmetatable(org, mo)
-	return org
 end
 
 return helper

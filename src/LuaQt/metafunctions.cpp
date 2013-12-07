@@ -58,7 +58,8 @@ namespace LuaQt
 	//upvalue 1: setter map
 	Q_DECL_EXPORT int General_newindex(lua_State *L)
 	{
-		luaL_error(L, "Not implemented yet!");
+		lua_rawset(L, 1);
+		//luaL_error(L, "Not implemented yet!");
 		return 0;
 	}
 
