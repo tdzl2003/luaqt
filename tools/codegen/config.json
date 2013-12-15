@@ -37,6 +37,16 @@
 			"end"
 		]
 	},
+	"excludedEnums": {
+		"QAbstractItemView":[
+			"CursorAction",
+			"State",
+			"DropIndicatorPosition"
+		],
+		"QAbstractSlider":[
+			"SliderChange"
+		]
+	},
 	"noExtendedClass":[
 		"QClipboard",
 		"QInputMethod",

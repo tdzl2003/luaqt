@@ -100,6 +100,19 @@ Q_DECL_EXPORT void /*%return classname%*/_initMethods(lua_State *L)
 	luaL_regfuncs(L, methods, sizeof(methods)/sizeof(luaL_Reg) - 1);
 }
 
+static luaQt_enumReg enumValues[] = {
+/*%
+	return enumValues()
+%*/
+	{NULL, 0}
+};
+
+static void init_enumValues(lua_State *L)
+{
+	luaL_regenumValues(L, enumValues, sizeof(enumValues)/sizeof(enumValues[0]) - 1);
+}
+
+
 static luaL_Reg getters[] = {
 /*%
 	return casterList()
@@ -142,6 +155,8 @@ static luaL_Reg statics[] = {
 void luadef_/*%return classname%*/(lua_State *L)
 {
 	luaL_newlib(L, statics);
+
+	init_enumValues(L);
 
 	lua_pushlightuserdata(L, const_cast<void*>(reinterpret_cast<const void*>(&CLASS::staticMetaObject)));
 	lua_setfield(L, -2, "_metaObject");

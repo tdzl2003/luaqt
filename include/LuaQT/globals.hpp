@@ -45,6 +45,21 @@ inline void luaL_regfuncs(lua_State*L, luaL_Reg* reg, size_t count)
 	}
 }
 
+typedef struct luaQt_enumReg
+{
+	const char *name;
+	int value;
+} luaQt_enumReg;
+
+inline void luaL_regenumValues(lua_State*L, luaQt_enumReg* reg, size_t count)
+{
+	for (size_t i = 0; i < count; ++i)
+	{
+		lua_pushinteger(L, reg[i].value);
+		lua_setfield(L, -2, reg[i].name);
+	}
+}
+
 #define luaL_newlib(l, m)  lua_createtable(l, 0, sizeof(m)/sizeof(m[0]) - 1); luaL_regfuncs(l, m, sizeof(m)/sizeof(m[0]) - 1)
 #define STR(x) #x
 

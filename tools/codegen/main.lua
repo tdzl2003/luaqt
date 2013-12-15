@@ -385,6 +385,18 @@ local function getExcludedSignals(self)
 	return ret
 end
 
+local function getExcludedEnums(self)
+	local excludedEnums = config.excludedEnums[self.classname]
+	if (not excludedEnums) then
+		return {}
+	end
+	local ret = {}
+	for i,v in ipairs(excludedEnums) do
+		ret[v] = true
+	end
+	return ret
+end
+
 function funcs:methodImpls()
 	local ret = {}
 	local methods = getMethodNames(self)
@@ -595,6 +607,22 @@ function funcs:initSuperMethods()
 	for i = #self.superclassList, 1, -1 do
 		if (self.superclassList[i].access == "public") then
 			table.insert(ret, string.format("\t%s_initMethods(L);\n", self.superclassList[i].name))
+		end
+	end
+	return table.concat(ret)
+end
+
+function funcs:enumValues()
+	local ret = {}
+	local excluded = getExcludedEnums(self)
+	for i,v in ipairs(self.enumList) do
+		if (not excluded[v.name]) then
+			table.insert(ret, string.format("\t/* %s::%s */\n", self.classname, v.name))
+			for j,n in ipairs(v.values) do
+				table.insert(ret, string.format(
+					'\t{"%s", (int)%s::%s},\n', n, self.classname, n
+					))
+			end
 		end
 	end
 	return table.concat(ret)

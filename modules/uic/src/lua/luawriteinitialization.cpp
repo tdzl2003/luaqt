@@ -564,6 +564,7 @@ void WriteInitialization::acceptUI(DomUI *node)
         //m_output << "\n" << m_indent << "QMetaObject::connectSlotsByName(" << varName << ");\n";
 	}
 
+	m_output << "\n" << m_indent << "return ui\n";
     m_output << "end -- setupUi\n\n";
 
 	m_output << "function ui_" << className << ".retranslateUi(" << varName << ", ui)\n"
