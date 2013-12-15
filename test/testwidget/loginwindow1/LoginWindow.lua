@@ -19,7 +19,7 @@ LuaQtHelper.addConstructor(LoginWindow, {"QWidget*"}, newLoginWindow)
 
 LuaQtHelper.addSignal(LoginWindow, "void", "logined", {})
 
-LuaQtHelper.addSlot(LoginWindow, "void", "doLogin", {}, function()
+LuaQtHelper.addSlot(LoginWindow, "void", "doLogin", {}, function(self)
 	self:logined()
 end)
 
