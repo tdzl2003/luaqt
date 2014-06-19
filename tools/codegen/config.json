@@ -17,9 +17,90 @@
 		"QOpenGLContextGroup",
 		"QOpenGLContext",
 		"QPdfWriter",
-		"Qt"
+        "QPodArrayOps",
+        "QGenericArrayOps",
+        "QMovableArrayOps",
+        "ResultStoreBase",
+        "QUnhandledException",
+        "QUrl",
+        "QVariant",
+        "QVariantComparisonHelper",
+        "QVariant",
+        "QXmlStreamAttribute",
+        "QXmlStreamAttributes",
+        "QXmlStreamEntityDeclaration",
+        "QXmlStreamEntityResolver",
+        "QXmlStreamNamespaceDeclaration",
+        "QXmlStreamNotationDeclaration",
+        "QXmlStreamAttributes",
+        "QXmlStreamReader",
+        "QXmlStreamStringRef",
+        "QXmlStreamWriter",
+        "QTextStreamManipulator",
+        "QTextEncoder",
+        "QPersistentModelIndex",
+        "QItemSelectionRange",
+        "QLatin1String",
+        "QLatin1Char",
+        "QJsonValueRef",
+        "QMetaMethod",
+        "QMimeType",
+        "QMetaType",
+        "QGenericReturnArgument",
+        "QGenericArgument",
+        "QFile",
+        "QFileInfoPrivate",
+        "QException",
+        "QEasingCurve",
+        "QDebug",
+        "QCharRef",
+        "QCharRef",
+        "NormalDeleter",
+        "QBasicAtomicInt",
+        "ExternalRefCountData",
+        "Connection",
+        "QColormap",
+        "QAbstractItemDelegate",
+        "QTreeWidgetItemIterator",
+        "QAccessibleWidget",
+        "QAccessible",
+        "QBitArray",
+        "QJsonArray",
+        "QJsonDocument",
+        "QJsonValue",
+        "QJsonObject",
+        "QModelIndex",
+        "QRegularExpressionMatchIterator",
+        "QStringMatcher",
+        "QTextCodec",
+        "QTextDecoder",
+        "QTextStream",
+        "QSystemSemaphore",
+        "QTemporaryDir",
+        "QThreadStorageData",
+        "QUuid",
+        "QUrlQuery",
+        "QWaitCondition",
+        "QDirModel",
+        "QFileSystemModel",
+        "QTextEngine",
+        "QTextCursorPrivate",
+        "QPlatformPixmap",
+        "QMatrix4x4",
+        "QAccessibleActionInterface",
+        "QAccessibleValueInterface",
+        "QAccessibleEditableTextInterface",
+        "QAccessibleImageInterface",
+        "QAccessibleTableCellInterface",
+        "QAccessibleTableInterface",
+        "QAccessibleInterface",
+        "QAccessibleTextInterface",
+        "QFontMetricsF"
 	],
 	"excludedMethods":{
+        "QChar": [
+            "ucs"
+        ],
 		"QObject":[
 			"findChild",
 			"findChildren",
@@ -28,7 +109,225 @@
 			"disconnect",
 			"connect",
 			"connect_functor"
-		],
+        ],
+        "QTime": [
+            "mds"
+        ],
+        "QWidgetItem": [
+            "wid"
+        ],
+        "QAbstractItemDelegate": [
+            "static_elidedText"
+        ],
+        "QStyle": [
+            "itemTextRect"
+        ],
+        "QProxyStyle": [
+            "itemTextRect"
+        ],
+        "QTreeWidgetItem": [
+            "read",
+            "write"
+        ],
+        "QListWidgetItem": [
+            "read",
+            "write"
+        ],
+        "QIconEngine": [
+            "read",
+            "write"
+        ],
+        "QStandardItem": [
+            "read",
+            "write"
+        ],
+        "QTableWidgetItem": [
+            "read",
+            "write"
+        ],
+        "QWidget": [
+            "fontMetrics"
+        ],
+        "QSizePolicy": [
+            "setControlType",
+            "QVariant"
+        ],
+        "QTextLength": [
+            "QVariant"
+        ],
+        "QPolygonF": [
+            "QVariant"
+        ],
+        "QPolygon": [
+            "QVariant",
+            "setPoints",
+            "putPoints"
+        ],
+        "QVector4D": [
+            "QVariant"
+        ],
+        "QVector3D": [
+            "QVariant"
+        ],
+        "QPixmap": [
+            "QVariant"
+        ],
+        "QVector2D": [
+            "QVariant"
+        ],
+        "QTransform": [
+            "QVariant"
+        ],
+        "QTextFormat": [
+            "QVariant"
+        ],
+        "QRegion": [
+            "QVariant"
+        ],
+        "QPen": [
+            "QVariant"
+        ],
+        "QPalette": [
+            "QVariant"
+        ],
+        "QQuaternion": [
+            "QVariant"
+        ],
+        "QSpacerItem": [
+            "sizeP"
+        ],
+        "QMatrix": [
+            "QVariant"
+        ],
+        "QKeySequence": [
+            "QVariant"
+        ],
+        "QIcon": [
+            "QVariant"
+        ],
+        "QFont": [
+            "QVariant"
+        ],
+        "QImage": [
+            "QVariant"
+        ],
+        "QCursor": [
+            "QVariant"
+        ],
+        "QColor": [
+            "QVariant"
+        ],
+        "QBrush": [
+            "QVariant"
+        ],
+        "QBitmap": [
+            "QVariant"
+        ],
+        "QStyleOptionSlider": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionRubberBand": [
+            "QStyleOption"
+        ],
+        "QStyleOptionToolBar": [
+            "QStyleOption"
+        ],
+		"QFileOpenEvent": [
+            "openFile"
+        ],
+        "QStyleOptionSizeGrip": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionComplex": [
+            "QStyleOption"
+        ],
+        "QStyleOptionSpinBox": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionTabWidgetFrame": [
+            "QStyleOption"
+        ],
+        "QStyleOptionButton": [
+            "QStyleOption"
+        ],
+        "QStyleOptionViewItem": [
+            "QStyleOption"
+        ],
+        "QStyleOptionComboBox": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionToolButton": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionTitleBar": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionTabBarBase": [
+            "QStyleOption"
+        ],
+        "QStyleOptionTab": [
+            "QStyleOption"
+        ],
+        "QStyleOptionDockWidget": [
+            "QStyleOption"
+        ],
+        "QStyleOptionFocusRect": [
+            "QStyleOption"
+        ],
+        "QStyleOptionGraphicsItem": [
+            "QStyleOption"
+        ],
+        "QStyleOptionFrame": [
+            "QStyleOption"
+        ],
+        "QStyleOptionHeader": [
+            "QStyleOption"
+        ],
+        "QStyleOptionGroupBox": [
+            "QStyleOptionComplex"
+        ],
+        "QStyleOptionMenuItem": [
+            "QStyleOption"
+        ],
+        "QStyleOptionToolBox": [
+            "QStyleOption"
+        ],
+        "QStyleOptionProgressBar": [
+            "QStyleOption"
+        ],
+        "QByteArray": [
+            "const char *",
+            "const void *"
+        ],
+        "QBitRef": [
+            "bool"
+        ],
+        "QByteRef": [
+            "char"
+        ],
+        "QLineF": [
+            "pt2"
+        ],
+        "QMetaType": [
+            "registerStreamOperators",
+            "registerType"
+        ],
+        "QStringRef": [
+            "m_size"
+        ],
+        "QJsonValueRef": [
+            "index"
+        ],
+        "QTextDecoder": [
+            "state"
+        ],
+        "QString": [
+            "d",
+            "sprintf"
+        ],
+        "QBitArray": [
+            "d"
+        ],
 		"QLibrary": [
 			"resolve"
 		],
