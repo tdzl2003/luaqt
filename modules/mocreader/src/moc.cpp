@@ -311,6 +311,7 @@ void Moc::parseFunctionArguments(FunctionDef *def)
             arg.rightType += ' ';
             arg.rightType += lexem();
         }
+		if(arg.rightType =="[]") arg.rightType="*";
         arg.normalizedType = normalizeType(QByteArray(arg.type.name + ' ' + arg.rightType));
         arg.typeNameForCast = normalizeType(QByteArray(noRef(arg.type.name) + "(*)" + arg.rightType));
         if (test(EQ))
@@ -383,6 +384,7 @@ bool Moc::parseFunction(FunctionDef *def, bool inMacro)
     def->isStatic = false;
     //skip modifiers and attributes
     while (test(INLINE) || (test(STATIC) && (def->isStatic = true)) ||
+		(test(FRIEND) && (def->isFriend = true) )||
         (test(VIRTUAL) && (def->isVirtual = true)) //mark as virtual
         || testFunctionAttribute(def) || testFunctionRevision(def)) {}
     bool templateFunction = (lookup() == TEMPLATE);
@@ -476,8 +478,32 @@ bool Moc::parseMaybeFunction(const ClassDef *cdef, FunctionDef *def)
 {
     def->isVirtual = false;
     def->isStatic = false;
+	bool templateFunction = (lookup() == TEMPLATE);
+	if(templateFunction)
+	{
+		Token t = next();//passtemplate
+		def->isTemplate = templateFunction;// pass all template<>
+		int template_depth = 1;
+		if(until(Token::LANGLE))
+		while(1 )
+		{
+			Token t = next();
+			if(t==(Token::LANGLE)){template_depth++;
+			}else if( t==(Token::RANGLE)){template_depth--;
+			}else ;
+			if( template_depth ==0){
+				break;
+			}
+		}
+		/*while(until(Token::RANGLE))
+		{
+		}*/
+		//while( test(EXPLICIT)
+	}
     //skip modifiers and attributes
-    while (test(EXPLICIT) || test(INLINE) || (test(STATIC) && (def->isStatic = true)) ||
+	while (test(EXPLICIT) || test(INLINE) || 
+		(test(FRIEND) && (def->isFriend = true) )||
+		(test(STATIC) && (def->isStatic = true)) ||
         (test(VIRTUAL) && (def->isVirtual = true)) //mark as virtual
         || testFunctionAttribute(def) || testFunctionRevision(def)) {}
     bool tilde = test(TILDE);
@@ -556,7 +582,8 @@ bool Moc::parseMaybeFunction(const ClassDef *cdef, FunctionDef *def)
 	if ((def->isAbstract = test(EQ)))
         until(SEMIC);
 	else if (!test(SEMIC)) {
-		if (!test(LBRACE)) {
+		if (!(test(LBRACE)||test(COLON)) )
+		{
 			return false;
 		}
 		until(RBRACE);
@@ -564,14 +591,37 @@ bool Moc::parseMaybeFunction(const ClassDef *cdef, FunctionDef *def)
     return true;
 }
 
-
+bool Moc::parseTypedef(ClassDef *def )
+{
+	TypeDef t;
+	t.metaType = parseType();
+	Token next_ = next();
+	if(next_ == IDENTIFIER )
+	{
+		t.typedefname = symbol().lexem();//next();
+	}else
+		return false;
+	if (def )
+	{
+		def->typeAliases.push_back(t);
+	}else
+	{
+		this->global_typeAliases .push_back( t);
+	}
+	return true;
+}
 void Moc::parse()
 {
     QList<NamespaceDef> namespaceList;
     bool templateClass = false;
-    while (hasNext()) {
+    while (hasNext())
+	{
         Token t = next();
         switch (t) {
+			case TYPEDEF:{ //global typedef 
+				parseTypedef();
+				break;
+			}
             case NAMESPACE: {
                 int rewind = index;
                 if (test(IDENTIFIER)) {
@@ -619,9 +669,10 @@ void Moc::parse()
                 }
                 break;
             case CLASS:
-            case STRUCT: {
-                if (currentFilenames.size() <= 1)
-                    break;
+            case STRUCT: 
+				{
+					if (currentFilenames.size() <= 1)
+						break;
 
                 ClassDef def;
                 if (!parseClassHead(&def))
@@ -644,12 +695,17 @@ void Moc::parse()
                 knownQObjectClasses.insert(def.classname);
                 knownQObjectClasses.insert(def.qualified);
 
-                continue; }
-            default: break;
+					continue; 
+				}
+            default: 
+			{
+				break;
+			}
         }
         if ((t != CLASS && t != STRUCT)|| currentFilenames.size() > 1)
             continue;
         ClassDef def;
+		def.hasTemplate = templateClass;
         if (parseClassHead(&def)) {
             FunctionDef::Access access = FunctionDef::Private;
             for (int i = namespaceList.size() - 1; i >= 0; --i)
@@ -657,6 +713,11 @@ void Moc::parse()
                     def.qualified.prepend(namespaceList.at(i).name + "::");
             while (inClass(&def) && hasNext()) {
                 switch ((t = next())) {
+				case TYPEDEF:
+					{
+						parseTypedef(&def);
+					}
+					break;
                 case PRIVATE:
                     access = FunctionDef::Private;
                     if (test(Q_SIGNALS_TOKEN))
@@ -700,14 +761,20 @@ void Moc::parse()
                 case Q_OBJECT_TOKEN:
                     def.hasQObject = true;
                     if (templateClass)
-                        error("Template classes not supported by Q_OBJECT");
+					{
+						 warning("Template classes not supported by Q_OBJECT\r\n");//modify for warning
+					}
                     if (def.classname != "Qt" && def.classname != "QObject" && def.superclassList.isEmpty())
-                        error("Class contains Q_OBJECT macro but does not inherit from QObject");
+                    {
+						warning("Class contains Q_OBJECT macro but does not inherit from QObject\r\n");
+					}
                     break;
                 case Q_GADGET_TOKEN:
                     def.hasQGadget = true;
                     if (templateClass)
-                        error("Template classes not supported by Q_GADGET");
+					{    
+						warning("Template classes not supported by Q_GADGET\r\n");
+					}
                     break;
                 case Q_PROPERTY_TOKEN:
                     parseProperty(&def);
@@ -738,6 +805,7 @@ void Moc::parse()
                     break;
                 case ENUM: {
                     EnumDef enumDef;
+					enumDef.access = access;
                     if (parseEnum(&enumDef))
                         def.enumList += enumDef;
                 } break;
@@ -749,7 +817,9 @@ void Moc::parse()
                     funcDef.access = access;
                     int rewind = index--;
                     if (parseMaybeFunction(&def, &funcDef)) {
-                        if (funcDef.isConstructor) {
+                        if (funcDef.isConstructor && 
+							!funcDef.isTemplate //add pass template function
+							) {
                             if (access == FunctionDef::Public) {
                                 def.constructorList += funcDef;
                             }

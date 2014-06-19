@@ -159,7 +159,10 @@ static void lua_pushType(lua_State *L, const Type& type)
 	lua_pushType_ReferenceType(L, type.referenceType);
 	lua_setfield(L, -2, "referenceType");
 }
-
+static void lua_push_global_typedef_valias(lua_State *L)
+{
+	
+}
 static void lua_pushArgumentDef(lua_State *L, const ArgumentDef& def)
 {
 	lua_createtable(L, 0, 6);
@@ -185,7 +188,9 @@ static void lua_pushArgumentDef(lua_State *L, const ArgumentDef& def)
 
 static void lua_pushFunctionDef(lua_State *L, const FunctionDef& def)
 {
-	lua_createtable(L, 0, 23);
+	lua_createtable(L, 0, 24);
+
+	
 
 	lua_pushType(L, def.type);
 	lua_setfield(L, -2, "type");
@@ -220,6 +225,10 @@ static void lua_pushFunctionDef(lua_State *L, const FunctionDef& def)
 
 	lua_pushboolean(L, def.isStatic);
 	lua_setfield(L, -2, "isStatic");
+
+	lua_pushboolean(L, def.isFriend);
+	lua_setfield(L, -2, "isFriend");
+
 
 	lua_pushboolean(L, def.inlineCode);
 	lua_setfield(L, -2, "inlineCode");
@@ -352,11 +361,14 @@ static void lua_pushClassInfoDef(lua_State *L, const ClassInfoDef& def)
 
 static void lua_pushEnumDef(lua_State *L, const EnumDef& def)
 {
-	lua_createtable(L, 0, 3);
+	lua_createtable(L, 0, 4);
 
 	lua_pushstring(L, def.name);
 	lua_setfield(L, -2, "name");
 
+	
+	lua_pushFunctionDef_Access(L,(FunctionDef::Access)def.access);
+	lua_setfield(L, -2, "access");
 	// values
 	lua_createtable(L, def.values.size(), 0);
 	for (size_t i = 0; i < def.values.size(); ++i)
@@ -370,9 +382,9 @@ static void lua_pushEnumDef(lua_State *L, const EnumDef& def)
 	lua_setfield(L, -2, "isEnumClass");
 }
 
-static void lua_pushClassDef(lua_State *L, const ClassDef& def)
+static void lua_pushClassDef(lua_State *L,  ClassDef& def)
 {
-	lua_createtable(L, 0, 20);
+	lua_createtable(L, 0, 21);
 
 	// classname
 	lua_pushstring(L, def.classname.data());
@@ -381,7 +393,21 @@ static void lua_pushClassDef(lua_State *L, const ClassDef& def)
 	// qualified
 	lua_pushstring(L, def.qualified.data());
 	lua_setfield(L, -2, "qualified");
+	//typedef 
+	//lua_pushstring(L,"typedef");
+	lua_createtable(L, def.typeAliases.size(), 0);//typdef parent
+	for( size_t i = 0 ;i <def.typeAliases.size();i++ )
+	{
+		lua_createtable(L, 0, 2);
 
+			lua_pushstring(L, def.typeAliases[i].typedefname);
+			lua_setfield(L, -2, "name");
+			lua_pushType(L, def.typeAliases[i].metaType);
+			lua_setfield(L, -2, "type");
+
+			lua_rawseti(L, -2, i+1);
+	}
+	lua_setfield(L, -2, "typedef");
 	// superclasses
 	lua_createtable(L, def.superclassList.size(), 0);
 	for (size_t j = 0; j < def.superclassList.size(); ++j)
@@ -419,13 +445,15 @@ static void lua_pushClassDef(lua_State *L, const ClassDef& def)
 		lua_rawseti(L, -2, j+1);
 	}
 	lua_setfield(L, -2, "interfaceList");
-
+	if( def.classname == "Qt") def.hasQObject =false;
 	lua_pushboolean(L, def.hasQObject);
 	lua_setfield(L, -2, "hasQObject");
 
 	lua_pushboolean(L, def.hasQGadget);
 	lua_setfield(L, -2, "hasQGadget");
 
+	lua_pushboolean(L, def.hasTemplate);
+	lua_setfield(L, -2, "hasTemplate");
 	// pluginData
 	lua_createtable(L, 0, 2);
 	{
