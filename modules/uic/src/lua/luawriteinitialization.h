@@ -94,6 +94,8 @@ struct WriteInitialization : public TreeWalker
     typedef QList<DomProperty*> DomPropertyList;
     typedef QHash<QString, DomProperty*> DomPropertyMap;
 
+	DomWidget *m_pDomWidget;
+	QList<DomAction*> listpDomAction;
     WriteInitialization(Uic *uic);
 
 //
@@ -181,7 +183,7 @@ private:
             ConstructItemOnly,
             ConstructItemAndVariable
         };
-        QString writeSetupUi(const QString &parent, EmptyItemPolicy emptyItemPolicy = ConstructItemOnly);
+        QString writeSetupUi(const QString &parent, EmptyItemPolicy emptyItemPolicy = ConstructItemOnly, int iFirst=0);
         void writeRetranslateUi(const QString &parentPath);
         void addSetter(const QString &setter, const QString &directive = QString(), bool translatable = false); // don't call it if you already added *this as a child of another Item
         void addChild(Item *child); // all setters should already been added
