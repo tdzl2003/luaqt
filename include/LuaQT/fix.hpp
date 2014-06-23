@@ -38,6 +38,11 @@
 #include <QtGui/QScreen>
 #include <QtGui/QOffscreenSurface>
 #include <QtGui/QGuiApplication>
+#include <QtCore\qfileinfo.h>
+#include <QtGui\QTextCursor>
+#include <QtGui\QBackingStore>
+#include <QtNetwork\QNetworkAccessManager>
+#include <QtNetwork\QHostAddress>
 namespace LuaQt{
 	template <>
 	struct is_qobject_ptr<QGraphicsEffectSource*>
@@ -50,6 +55,22 @@ namespace LuaQt{
 		: public std::tr1::false_type
 	{
 	};
+	template <>
+	struct is_qobject_ptr<QFileInfoPrivate*>
+		: public std::tr1::false_type
+	{
+	};
+	template <>
+	struct is_qobject_ptr<QTextCursorPrivate*>
+		: public std::tr1::false_type
+	{
+	};
+	template <>
+	struct is_qobject_ptr<QTextDocumentPrivate*>
+		: public std::tr1::false_type
+	{
+	};
+	
 
 	template <>
 	struct is_qobject_ptr<QPlatformMenuBar*>
@@ -62,15 +83,46 @@ namespace LuaQt{
 		: public std::tr1::false_type
 	{
 	};
-
+	template <>
+	struct is_qobject_ptr<QPlatformSurface*>
+		: public std::tr1::false_type
+	{
+	};
+	template <>
+	struct is_qobject_ptr<const sockaddr *>
+		: public std::tr1::false_type
+	{
+	};
+	
+	template <>
+	struct is_qobject_ptr<QPlatformPixmap*>
+		: public std::tr1::false_type
+	{
+	};
+	template <>
+	struct is_qobject_ptr<QPlatformBackingStore*>
+		: public std::tr1::false_type
+	{
+	};
+	
 	template <>
 	struct is_qobject_ptr<QPlatformWindow*>
 		: public std::tr1::false_type
 	{
 	};
-
 	template <>
-	struct is_qobject_ptr<QTextDocumentPrivate*>
+	struct is_qobject_ptr<QAuthenticator*>
+		: public std::tr1::false_type
+	{
+	};
+	
+	template <>
+	struct is_qobject_ptr<const QTextDocumentPrivate*>
+		: public std::tr1::false_type
+	{
+	};
+	template <>
+	struct is_qobject_ptr<QTextEngine*>
 		: public std::tr1::false_type
 	{
 	};

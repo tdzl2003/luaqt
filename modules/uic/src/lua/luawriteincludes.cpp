@@ -85,7 +85,11 @@ void WriteIncludes::acceptUI(DomUI *node)
     add(QLatin1String("QButtonGroup")); // ### only if it is really necessary
     add(QLatin1String("QHeaderView"));
 
+	add(QLatin1String("QFont"));
+
     TreeWalker::acceptUI(node);
+	
+	m_output << "local bit = require(\"bit\");\n";
 
     writeHeaders(m_requires);
 

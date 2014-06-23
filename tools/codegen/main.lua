@@ -19,6 +19,10 @@ local json = require("json")
 _G.QtPath = "C:\\Qt\\Qt5.1.0x86\\5.1.0\\msvc2012"
 _G.QtIncludePath = path.normjoin(QtPath, "include")
 
+local function issuperclasstemplate(superclassname)
+	local _ ,end_ = string.find(superclassname ,"<%a+>")
+	return end_ ~= nil
+end
 local function readJsonFile(path)
 	local fd = io.open(path)
 	if (not fd) then
@@ -86,27 +90,30 @@ end
 local function getAbstractMethods(info, map)
 	-- first, get all abstract method from all super classes
 	map = map or {}
-
-	for i,v in ipairs(info.superclassList) do
-		local cinfo = loadClassInfo(v.name) or error("Cannot find info of "..v.name)
-		getAbstractMethods(cinfo, map)
-		-- for i,v in ipairs(list or {}) do
-			-- map[v] = true
-		-- end
+	if  type(info) ~= "table" then return map end;
+	if  info.superclassList ~= nil then -- !=
+		for i,v in ipairs(info.superclassList) do
+			local cinfo = loadClassInfo(v.name) --or error("Cannot find info of "..v.name)
+			if cinfo ==nil then return map end
+			getAbstractMethods(cinfo, map)
+			-- for i,v in ipairs(list or {}) do
+				-- map[v] = true
+			-- end
+		end
 	end
-
+	if info.methodList ~= nil then
 	-- test if abstract method are implemented.
-	for i,v in ipairs(info.methodList) do
-		if (not v.isStatic) then
-			local sign = getMethodSign(v)
-			if (v.isAbstract) then
-				map[sign] = true
-			else
-				map[sign] = nil
+		for i,v in ipairs(info.methodList) do
+			if (not v.isStatic) then
+				local sign = getMethodSign(v)
+				if (v.isAbstract) then
+					map[sign] = true
+				else
+					map[sign] = nil
+				end
 			end
 		end
 	end
-
 	-- local ret = {}
 	-- for k,v in pairs(map) do
 		-- table.insert(ret, k)
@@ -158,6 +165,10 @@ end
 
 local function findNestedName(class, name)
 	-- find nested enum
+	if type(class) ~="table" then
+		print("Cannot find nested name")
+		return name
+	end
 	for i,v in ipairs(class.enumList) do
 		if (v.name == name) then
 			return class.classname.."::"..name
@@ -175,6 +186,11 @@ local function findNestedName(class, name)
 			return class.classname.."::"..name
 		end
 	end
+	for i ,v in pairs(class.typedef) do
+		if(v.name == name) then
+			return class.classname.."::"..name
+		end
+	end
 	-- find in super classes.
 	for i,v in ipairs(class.superclassList) do
 		local cinfo = loadClassInfo(v.name)
@@ -186,7 +202,7 @@ local function findNestedName(class, name)
 end
 
 local function parseNestedName(class, name)
-	return name:gsub("(%:*)(%w+)", function(d, s)
+	return name:gsub("(%:*)(%w*%_*%w+)", function(d, s)
 		if (d == "::") then
 			return
 		end
@@ -402,7 +418,7 @@ function funcs:methodImpls()
 	local methods = getMethodNames(self)
 	local excludedMethods = getExcludedMethods(self)
 	for k,v in pairs(methods) do
-		if (not excludedMethods[k]) then
+		if (not excludedMethods[k]) and issuperclasstemplate(k)==false and v[1].isFriend == false then
 			table.insert(ret, printMethods(self, "method", self.classname..'_'..k, v))
 		end
 	end
@@ -423,7 +439,7 @@ function funcs:methodTable()
 	local methods = getMethodNames(self)
 	local excludedMethods = getExcludedMethods(self)
 	for k,v in pairs(methods) do
-		if (not excludedMethods[k]) then
+		if (not excludedMethods[k]) and issuperclasstemplate(k)==false and v[1].isFriend == false then
 			table.insert(ret, '\t{"'..k..'", '..self.classname..'_'..k..'},\n')
 		end
 	end
@@ -556,8 +572,9 @@ function generateCasters(self, ret, route)
 				class = self,
 			}))
 	end
+	if type( self ) ~="table" then return end
 	for i,v in ipairs(self.superclassList) do
-		if (v.access == "public") then
+		if (v.access == "public" and issuperclasstemplate( v.name )==false) then
 			table.insert(route, v.name)
 			generateCasters(loadClassInfo(v.name), ret, route)
 			table.remove(route)
@@ -571,8 +588,9 @@ function generateCasterList(self, ret, route)
 				'\t{"%s", %s},\n'
 			, route[#route], table.concat(route, '_')))
 	end
+	if type(self ) ~= "table" then return end
 	for i,v in ipairs(self.superclassList) do
-		if (v.access == "public") then
+		if (v.access == "public" and issuperclasstemplate( v.name )==false)  then
 			table.insert(route, v.name)
 			generateCasterList(loadClassInfo(v.name), ret, route)
 			table.remove(route)
@@ -595,7 +613,7 @@ end
 function funcs:declareInitSuperMethods()
 	local ret = {}
 	for i = #self.superclassList, 1, -1 do
-		if (self.superclassList[i].access == "public") then
+		if (self.superclassList[i].access == "public") and issuperclasstemplate(self.superclassList[i].name)==false then
 			table.insert(ret, string.format("void %s_initMethods(lua_State *L);\n", self.superclassList[i].name))
 		end
 	end
@@ -606,7 +624,9 @@ function funcs:initSuperMethods()
 	local ret = {}
 	for i = #self.superclassList, 1, -1 do
 		if (self.superclassList[i].access == "public") then
-			table.insert(ret, string.format("\t%s_initMethods(L);\n", self.superclassList[i].name))
+			if issuperclasstemplate ( self.superclassList[i].name) ==false then
+				table.insert(ret, string.format("\t%s_initMethods(L);\n", self.superclassList[i].name))
+			end
 		end
 	end
 	return table.concat(ret)
@@ -617,11 +637,13 @@ function funcs:enumValues()
 	local excluded = getExcludedEnums(self)
 	for i,v in ipairs(self.enumList) do
 		if (not excluded[v.name]) then
-			table.insert(ret, string.format("\t/* %s::%s */\n", self.classname, v.name))
-			for j,n in ipairs(v.values) do
-				table.insert(ret, string.format(
-					'\t{"%s", (int)%s::%s},\n', n, self.classname, n
-					))
+			if( v.access =="public" ) then
+				table.insert(ret, string.format("\t/* %s::%s */\n", self.classname, v.name))
+				for j,n in ipairs(v.values) do
+					table.insert(ret, string.format(
+						'\t{"%s", (int)%s::%s},\n', n, self.classname, n
+						))
+				end
 			end
 		end
 	end
@@ -657,14 +679,15 @@ for k,classes in pairs(packages) do
 		-- if (info.hasQObject and not isDerivedFromQObject(info)) then
 			-- print("Warning: hasQObject but not derived from QObject.")
 		-- end
-		assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
+		--assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
 		if (excludeClasses[class]) then
 			print("\t\tExcluded.")
-		elseif (info and info.hasQObject and info.name ~= "Qt") then
+		--elseif (info and info.hasQObject and info.name ~= "Qt") then
+		else
 			writeClassSource(k, info)
 			table.insert(validClasses, class)
-		else
-			print('\t\tIgnore non-QObject type.')
+		--else
+			--print('\t\tIgnore non-QObject type.')
 		end
 		-- collectgarbage()
 	end

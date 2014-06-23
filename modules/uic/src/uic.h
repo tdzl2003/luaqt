@@ -79,6 +79,10 @@ public:
     inline QTextStream &output()
     { return out; }
 
+	inline QTextStream &cl_output()
+    { return m_output_uitolua; }
+
+
     inline const Option &option() const
     { return opt; }
 
@@ -100,6 +104,8 @@ public:
     inline const CustomWidgetsInfo *customWidgetsInfo() const
     { return &cWidgetsInfo; }
 
+inline QTextStream &outputuitolua()
+    { return m_output_uitolua; }
     bool write(QIODevice *in);
 
 #ifdef QT_UIC_JAVA_GENERATOR
@@ -142,6 +148,8 @@ private:
     CustomWidgetsInfo cWidgetsInfo;
     QString pixFunction;
     bool externalPix;
+
+    QTextStream &m_output_uitolua;
 };
 
 QT_END_NAMESPACE

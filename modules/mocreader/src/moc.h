@@ -75,6 +75,7 @@ struct EnumDef
 {
     QByteArray name;
     QList<QByteArray> values;
+	uint access; //for 
     bool isEnumClass; // c++11 enum class
     EnumDef() : isEnumClass(false) {}
 };
@@ -87,13 +88,19 @@ struct ArgumentDef
     QByteArray typeNameForCast; // type name to be used in cast from void * in metacall
     bool isDefault;
 };
-
+struct TypeDef
+{
+	Type metaType;//
+	QByteArray typedefname;
+};
 struct FunctionDef
 {
     FunctionDef(): returnTypeIsVolatile(false), access(Private), isConst(false), isVirtual(false), isStatic(false),
                    inlineCode(false), wasCloned(false), isCompat(false), isInvokable(false),
                    isScriptable(false), isSlot(false), isSignal(false), isPrivateSignal(false),
-                   isConstructor(false), isDestructor(false), isAbstract(false), revision(0) {}
+                   isConstructor(false), isDestructor(false), isAbstract(false), revision(0),
+				 isFriend(false),//add for friend function
+				 isTemplate(false){}
     Type type;
     QByteArray normalizedType;
     QByteArray tag;
@@ -107,6 +114,8 @@ struct FunctionDef
     bool isConst;
     bool isVirtual;
     bool isStatic;
+	bool isFriend;//add for friend function
+	bool isTemplate;
     bool inlineCode;
     bool wasCloned;
 
@@ -151,7 +160,7 @@ struct ClassInfoDef
 
 struct ClassDef {
     ClassDef():
-        hasQObject(false), hasQGadget(false), notifyableProperties(0)
+        hasQObject(false), hasQGadget(false),hasTemplate(false), notifyableProperties(0)
         , revisionedMethods(0), revisionedProperties(0), begin(0), end(0){}
     QByteArray classname;
     QByteArray qualified;
@@ -168,7 +177,7 @@ struct ClassDef {
 
     bool hasQObject;
     bool hasQGadget;
-
+	bool hasTemplate;
     struct PluginData {
         QByteArray iid;
         QJsonDocument metaData;
@@ -183,6 +192,9 @@ struct ClassDef {
     QMap<QByteArray, bool> enumDeclarations;
     QList<EnumDef> enumList;
     QMap<QByteArray, QByteArray> flagAliases;
+	QList<TypeDef>				 typeAliases;//±äÁ¿±ðÃû
+
+	//
     int revisionedMethods;
     int revisionedProperties;
 
@@ -214,7 +226,7 @@ public:
     QMap<QByteArray, QByteArray> interface2IdMap;
     QList<QByteArray> metaTypes;
     QSet<QByteArray> knownQObjectClasses;
-
+	QList<TypeDef>	 global_typeAliases;//±äÁ¿±ðÃû
     void parse();
     void generate(FILE *out);
 
@@ -228,6 +240,7 @@ public:
     }
 
     Type parseType();
+	bool parseTypedef(ClassDef *def = NULL);
 
     bool parseEnum(EnumDef *def);
 

@@ -74,7 +74,8 @@ inline QString fixString(const QString &str, const QString &indent,
         const uchar cbyte = utf8.at(i);
         if (cbyte >= 0x80) {
             cursegment += QLatin1Char('\\');
-            cursegment += QString::number(cbyte, 8);
+			cursegment += QLatin1Char('x');
+            cursegment += QString::number(cbyte, 16);
             flags |= Utf8String;
         } else {
             switch(cbyte) {
@@ -86,7 +87,7 @@ inline QString fixString(const QString &str, const QString &indent,
                 break;
             case '\n':
                 flags |= MultiLineString;
-                cursegment += QLatin1String("\\n\"\n\""); break;
+                cursegment += QLatin1String("\\n\"..\n\""); break;
             default:
                 cursegment += QLatin1Char(cbyte);
             }
@@ -134,7 +135,8 @@ inline QString fixLuaString(const QString &str, const QString &indent,
         const uchar cbyte = utf8.at(i);
         if (cbyte >= 0x80) {
             cursegment += QLatin1Char('\\');
-            cursegment += QString::number(cbyte, 8);
+			cursegment += QLatin1Char('x');
+            cursegment += QString::number(cbyte, 16);
             flags |= Utf8String;
         } else {
             switch(cbyte) {
@@ -146,7 +148,8 @@ inline QString fixLuaString(const QString &str, const QString &indent,
                 break;
             case '\n':
                 flags |= MultiLineString;
-                cursegment += QLatin1String("\\n\"\n + \""); break;
+                cursegment += QLatin1String("\\n\"..\n\""); break;
+                break;
             default:
                 cursegment += QLatin1Char(cbyte);
             }
