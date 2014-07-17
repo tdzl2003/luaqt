@@ -159,27 +159,36 @@ local function buildMetaInfo(mo)
 	return strings, metaDatas
 end
 
-local function defineMetaCall(mo)
-	local invokes = {}
+function unpackArgs(args, argtable)
+	local ret = {}
+	for i,v in ipairs(argtable) do
+		local f = LuaQt.pushArg[v]
+		ret[i] = f and f(args, i)
+	end
+	return unpack(ret)
+end
 
-	local function metaCall(c, id, ...)
-		return invokes[c] and invokes[c][id] and invokes[c][id](...)
+local function defineMetaCall(mo)
+	local invoke = {}
+	local argtable = {}
+
+	local function metaCall(c, id, self, args)
+		return c == 0  and invoke[id] and invoke[id](self, unpackArgs(args, argtable[id]))
 	end
 
 	-- InvokeMetaMethod
 	do
-		local invoke = {}
-		invokes[0] = invoke
-
 		local localid = 1
 
 		for i,v in ipairs(mo.signalList) do
 			invoke[localid] = v.func
+			argtable[localid] = v.arguments
 			localid = localid + 1
 		end
 
 		for i,v in ipairs(mo.slotList) do
 			invoke[localid] = v.func
+			argtable[localid] = v.arguments
 			localid = localid + 1
 		end
 	end

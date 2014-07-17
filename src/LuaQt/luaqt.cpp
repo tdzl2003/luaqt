@@ -144,11 +144,36 @@ static luaL_Reg luaqt_lib[] = {
 	{NULL, NULL}
 };
 
+template <typename T>
+struct General_argTranser{
+    static int transer(lua_State *L)
+    {
+        void** a = (void**)lua_touserdata(L, 1);
+        if (!a){
+            return luaL_error(L, "Invalid argument.");
+        }
+        int i = luaL_checkint(L, 2);
+        LuaQt::ArgHelper<T>::pushRetVal(L, *(reinterpret_cast<T*>(a[i])));
+        return 1;
+    }
+};
+
+#define GEN_TRANSTYPE(type) {#type, General_argTranser<type>::transer}
+
+static luaL_Reg luaqt_argTranser[] = {
+    GEN_TRANSTYPE(bool),
+    GEN_TRANSTYPE(int),
+    {NULL, NULL}
+};
+
 extern "C" Q_DECL_EXPORT int luaopen_LuaQt(lua_State*L)
 {
 	LuaQt::saveGlobalState(L);
 	LuaQt::InitGCer(L);
 
 	luaL_newlib(L, luaqt_lib);
+
+    luaL_newlib(L, luaqt_argTranser);
+    lua_setfield(L, -2, "pushArg");
 	return 1;
 }

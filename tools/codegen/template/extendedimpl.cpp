@@ -37,9 +37,9 @@ namespace LuaQt{
 					mc->push();
 					lua_pushinteger(L, (int)_c);
 					lua_pushinteger(L, _id+1);
-					// TODO: add metacall arguments.
 					LuaQt::PushObject(L, this);
-					lua_call(L, 3, 0);
+					lua_pushlightuserdata(L, _a);
+					lua_call(L, 4, 0);
 				}
 				_id -= mc;
 			} else if (_c == QMetaObject::RegisterMethodArgumentMetaType){
