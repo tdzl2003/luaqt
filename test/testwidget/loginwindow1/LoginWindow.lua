@@ -11,7 +11,8 @@ local LoginWindow = {
 local function newLoginWindow(mo, parent)
 	local self = QWidget.newExtended(mo, parent)
 	self.ui = ui_LoginWindow.setupUi(self)
-	self:connect(self.ui.btn_Login, "2clicked()", "1doLogin()")
+	self:connect(self.ui.btn_Login, "2clicked(bool)", "1doLogin(bool)")
+	self:connect(self.ui.edit_ID, "2cursorPositionChanged(int,int)", "1testPosition(int,int)")
 	return self
 end
 
@@ -19,7 +20,13 @@ LuaQtHelper.addConstructor(LoginWindow, {"QWidget*"}, newLoginWindow)
 
 LuaQtHelper.addSignal(LoginWindow, "void", "logined", {})
 
-LuaQtHelper.addSlot(LoginWindow, "void", "doLogin", {}, function(self)
+LuaQtHelper.addSlot(LoginWindow, "void", "doLogin", {"bool"}, function(self, ...)
+	print(...)
+	self:logined()
+end)
+
+LuaQtHelper.addSlot(LoginWindow, "void", "testPosition", {"int", "int"}, function(self, ...)
+	print(...)
 	self:logined()
 end)
 
