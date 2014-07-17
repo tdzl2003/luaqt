@@ -49,7 +49,7 @@
 #include <QtCore/qdir.h>
 
 // for normalizeTypeInternal
-#include <QtCore/5.1.0/QtCore/private/qmetaobject_moc_p.h>
+#include "qmetaobject_moc_p.h"
 
 QT_BEGIN_NAMESPACE
 

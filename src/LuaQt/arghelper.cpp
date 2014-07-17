@@ -34,6 +34,7 @@ namespace LuaQt
 	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned int>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<unsigned long>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<__int64>;
+    template class Q_DECL_EXPORT ArgHelperGeneral<unsigned __int64>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<long>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<double>;
 	template class Q_DECL_EXPORT ArgHelperGeneral<double*>;
@@ -153,6 +154,30 @@ namespace LuaQt
 	{
 		lua_pushinteger(L, val);
 	}
+
+    Q_DECL_EXPORT bool ArgHelperGeneral<unsigned __int64>::CheckArg(lua_State *L, int idx)
+    {
+        if (lua_isnumber(L, idx))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    Q_DECL_EXPORT unsigned __int64 ArgHelperGeneral<unsigned __int64>::GetArg(lua_State *L, int idx)
+    {
+        return lua_tointeger(L, idx);
+    }
+
+    Q_DECL_EXPORT void ArgHelperGeneral<unsigned __int64>::pushRetVal(lua_State *L, const unsigned __int64& val)
+    {
+        lua_pushinteger(L, val);
+    }
+
+    Q_DECL_EXPORT void ArgHelperGeneral<unsigned __int64>::pushRetVal(lua_State *L, unsigned __int64&& val)
+    {
+        lua_pushinteger(L, val);
+    }
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<long>::CheckArg(lua_State *L, int idx)
 	{

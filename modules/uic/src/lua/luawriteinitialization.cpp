@@ -460,7 +460,7 @@ static bool needsTranslation(const DomElement *element)
 // ---  WriteInitialization
 WriteInitialization::WriteInitialization(Uic *uic) :
       m_uic(uic),
-      m_driver(uic->driver()), m_output(uic->output()), m_output_uitolua(uic->outputuitolua()), m_option(uic->option()),
+      m_driver(uic->driver()), m_output(uic->output()), m_option(uic->option()),
       m_indent(m_option.indent),
       m_dindent(m_indent + m_option.indent),
       m_stdsetdef(true),

@@ -59,7 +59,6 @@
 #ifdef QT_UIC_LUA_GENERATOR
 #include "lua/luawriteincludes.h"
 #include "lua/luawritedeclaration.h"
-#include "lua/luawritecontroller.h"
 #endif
 
 
@@ -74,8 +73,8 @@ Uic::Uic(Driver *d)
      : drv(d),
        out(d->output()),
        opt(d->option()),
-       externalPix(true),
-       m_output_uitolua(d->outputuitolua())
+       externalPix(true)
+//       m_output_uitolua(d->outputuitolua())
 {
 }
 
@@ -299,7 +298,7 @@ bool Uic::luawrite(DomUI *ui)
     Validator(this).acceptUI(ui);
 	WriteDeclaration(this).acceptUI(ui);
 
-	WriteController(this).acceptUI(ui);
+    //WriteController(this).acceptUI(ui);
 
     return true;
 }
