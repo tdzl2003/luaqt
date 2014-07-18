@@ -675,19 +675,19 @@ for k,classes in pairs(packages) do
 	local validClasses = {}
 	for i,class in ipairs(classes) do
 		print('\tClass: '..class)
-		local info = loadClassInfo(class)
+		local info = (not excludeClasses[class]) and loadClassInfo(class)
 		-- if (info.hasQObject and not isDerivedFromQObject(info)) then
 			-- print("Warning: hasQObject but not derived from QObject.")
 		-- end
 		--assert(info.classname=="Qt" or (not info.hasQObject) or isDerivedFromQObject(info))
 		if (excludeClasses[class]) then
 			print("\t\tExcluded.")
-		--elseif (info and info.hasQObject and info.name ~= "Qt") then
-		else
+		elseif (info and info.hasQObject and info.name ~= "Qt") then
+		-- else
 			writeClassSource(k, info)
 			table.insert(validClasses, class)
-		--else
-			--print('\t\tIgnore non-QObject type.')
+		else
+			print('\t\tIgnore non-QObject type.')
 		end
 		-- collectgarbage()
 	end
