@@ -159,13 +159,46 @@ local function buildMetaInfo(mo)
 	return strings, metaDatas
 end
 
-function unpackArgs(args, argtable)
+local function unpackArgs(args, argtable)
 	local ret = {}
 	for i,v in ipairs(argtable) do
-		local f = LuaQt.pushArg[v]
-		ret[i] = f and f(args, i)
+		ret[i] = v(args, i)
 	end
 	return unpack(ret)
+end
+
+local function nop()
+end
+
+local function parseType(n)
+	if (LuaQt.transArg[n]) then
+		return LuaQt.transArg[n]
+	end
+
+	local a, b = n:match("(%w+)%<(.+)%>")
+	if (a) then
+		print("Warning: Template argument is not supported:" + n);
+		return nop
+	end
+
+	local pointer = n:match("(%w+)%*")
+	if (pointer) then
+		-- try QObject classes
+		if (_G[pointer] and type(_G[pointer]) == 'table' and _G[pointer].transPointerArg) then
+			return _G[pointer].transPointerArg
+		end
+	end
+
+	print("Warning: Argument type not supported: " .. n);
+	return nop
+end
+
+local function getArgHelper(types)
+	local ret = {}
+	for i, v in ipairs(types) do
+		ret[i] = parseType(v)
+	end
+	return ret
 end
 
 local function defineMetaCall(mo)
@@ -182,13 +215,13 @@ local function defineMetaCall(mo)
 
 		for i,v in ipairs(mo.signalList) do
 			invoke[localid] = v.func
-			argtable[localid] = v.arguments
+			argtable[localid] = getArgHelper(v.arguments)
 			localid = localid + 1
 		end
 
 		for i,v in ipairs(mo.slotList) do
 			invoke[localid] = v.func
-			argtable[localid] = v.arguments
+			argtable[localid] = getArgHelper(v.arguments)
 			localid = localid + 1
 		end
 	end

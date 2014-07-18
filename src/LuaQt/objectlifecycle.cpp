@@ -78,9 +78,8 @@ namespace LuaQt{
 	{
 		QLuaQtUserData* userData = (QLuaQtUserData*) obj->userData(0);
 		if (!userData){
-			//TODO: Get className from meta-object and init it.
-			// use obj->metaObject()->className
-			luaL_error(L, "Object has no lua reference.");
+            InitAndPushObject(L, obj, obj, obj->metaObject()->className());
+            return;
 		}
 		getweakref(L, userData->lua_ref);
 	}
@@ -150,6 +149,9 @@ namespace LuaQt{
 		lua_rawset(L, -3);
 		
 		luaL_getmetatable(L, className);
+        if (lua_isnil(L, -1)){
+            luaL_error(L, "Cannot find class %s. ", className);
+        }
 		lua_setmetatable(L, -2);
 
 		// listen "destroyed" signal
@@ -164,5 +166,4 @@ namespace LuaQt{
 		userData->lua_ref = weakref(L);
 		obj->setUserData(0, userData);
 	}
-
 }

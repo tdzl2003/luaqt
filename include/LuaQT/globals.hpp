@@ -78,3 +78,21 @@ inline void luaL_regenumValues(lua_State*L, luaQt_enumReg* reg, size_t count)
 #define START_ARGREF_FRAME() LuaQt::StartArgRefFrame(L)
 #define END_ARGREF_FRAME() LuaQt::EndArgRefFrame(L)
 #define PUSH_RET_VAL(t, v) LuaQt::ArgHelper<LuaQt::remove_const<LuaQt::remove_reference<UNPACK(t)>::type>::type>::pushRetVal(L, v)
+
+
+namespace LuaQt{
+    template <typename T>
+    struct QObject_pointerTranser{
+        static int transer(lua_State *L)
+        {
+            void** a = (void**)lua_touserdata(L, 1);
+            if (!a){
+                return luaL_error(L, "Invalid argument.");
+            }
+            int i = luaL_checkint(L, 2);
+            LuaQt::PushObject(L, *(reinterpret_cast<T*(*)>(a[i])));
+            return 1;
+        }
+    };
+
+}

@@ -163,6 +163,7 @@ struct General_argTranser{
 static luaL_Reg luaqt_argTranser[] = {
     GEN_TRANSTYPE(bool),
     GEN_TRANSTYPE(int),
+    GEN_TRANSTYPE(QString),
     {NULL, NULL}
 };
 
@@ -174,6 +175,6 @@ extern "C" Q_DECL_EXPORT int luaopen_LuaQt(lua_State*L)
 	luaL_newlib(L, luaqt_lib);
 
     luaL_newlib(L, luaqt_argTranser);
-    lua_setfield(L, -2, "pushArg");
+    lua_setfield(L, -2, "transArg");
 	return 1;
 }

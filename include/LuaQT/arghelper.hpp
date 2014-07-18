@@ -91,22 +91,36 @@ namespace LuaQt
 	{
 	public:
 		static bool CheckArg(lua_State *L, int idx){
-			//luaL_error(L, "Not implemented.");
 			return isObject(L, idx, T::staticMetaObject.className());
 		}
 		static T* GetArg(lua_State *L, int idx){
-			//luaL_error(L, "Not implemented.");
 			return (T*)checkObject(L, idx, T::staticMetaObject.className());
 		}
 		static void pushRetVal(lua_State*L,  T* const& val){
-			luaL_error(L, "Not implemented.");
-			lua_pushnil(L);
+            PushObject(L, val);
 		}
 		static void pushRetVal(lua_State*L, T*&& val) {
-			luaL_error(L, "Not implemented.");
-			lua_pushnil(L);
+            PushObject(L, val);
 		}
 	};
+
+    template <typename T>
+    class ArgHelperQObjectPtr<const T*>
+    {
+    public:
+        static bool CheckArg(lua_State *L, int idx){
+            return isObject(L, idx, T::staticMetaObject.className());
+        }
+        static const T* GetArg(lua_State *L, int idx){
+            return (const T*)checkObject(L, idx, T::staticMetaObject.className());
+        }
+        static void pushRetVal(lua_State*L,  const T* const& val){
+            luaL_error(L, "Not implemented.");
+        }
+        static void pushRetVal(lua_State*L, const T*&& val) {
+            luaL_error(L, "Not implemented.");
+        }
+    };
 
 	template <typename T>
 	class ArgHelperQList
