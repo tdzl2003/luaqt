@@ -86,7 +86,6 @@ namespace LuaQt{
     }
 
 	static void wunref (lua_State *L, int t, int ref) {
-        //当使用lua_rawgeti时，栈里面已经为空
         if (ref >= 0) {
             lua_rawgeti(L, t, freelist);
             lua_rawseti(L, t, ref);  /* t[ref] = t[freelist] */
