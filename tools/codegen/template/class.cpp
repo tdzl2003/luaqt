@@ -191,7 +191,7 @@ void luadef_/*%return classname%*/(lua_State *L)
 
 	lua_pop(L, 1);
 
-	lua_pushcclosure(L, LuaQt::QObject_pointerTranser<CLASS>::transer);
+	lua_pushcfunction(L, LuaQt::QObject_pointerTranser<CLASS>::transer);
 	lua_setfield(L, -2, "transPointerArg");
 
 
