@@ -1,3 +1,10 @@
+-- Copyright (C) 2013 tdzl2003.
+-- Contact: https://github.com/tdzl2003/luaqt
+
+-- This file is part of the LuaQt Toolkit source.
+
+-- This file is licensed at BSD New license.
+
 -- NOTICE:
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
 -- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
@@ -9,10 +16,9 @@
 -- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 -- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
 -- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
--- POSSIBILITY OF SUCH DAMAGE.
--- 
--- read COPYRIGHT.md for more informations.
+-- POSSIBILITY OF SUCH DAMAGE. 
 
+-- read COPYRIGHT.md for more informations.
 local path = {}
 
 --current = fbmakelib.getcwd()
