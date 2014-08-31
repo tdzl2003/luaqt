@@ -41,7 +41,7 @@ REM Generate code.
 luajit ./tools/codegen/main.lua ./tools/codegen/config.json
 
 cd make
-if not exists Root mkdir Root
+if not exist Root mkdir Root
 cd Root
 
 qmake ..\..\build\qtpro\Root.pro -r
