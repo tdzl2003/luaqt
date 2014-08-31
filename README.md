@@ -45,7 +45,7 @@ Install
 
 4. Run `Developer Command Prompt` for Visual Studio
 
-5. Goto luaqt directory and run `msvcbuild.bat`
+5. Goto luaqt directory and run `msvcbuild.cmd`
 
 	```
 	cd C:\luaqt
