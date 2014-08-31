@@ -7,3 +7,6 @@ Release
 
 /gen
 
+/bin
+/make
+/tmp

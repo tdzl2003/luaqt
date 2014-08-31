@@ -17,7 +17,7 @@ local path = require("path")
 local mocreader = require("mocreader")
 local json = require("json")
 
-_G.QtPath = "C:\\Qt\\Qt5.1.0x86\\5.1.0\\msvc2012"
+_G.QtPath = os.getenv("QT_HOME") or error("Must set QT_HOME environment variable.")
 _G.QtIncludePath = path.normjoin(QtPath, "include")
 
 local fileList = {}
@@ -34,13 +34,6 @@ do
 
 			for j,file in ipairs(path.listFiles(packageBase)) do
 				local srcPath = path.normjoin(packageBase, file)
-				-- if (file == "qabstractbutton.h") then
-				-- 	print("HHHHHHHHHHHERE")
-				-- 	packageMap[srcPath] = package
-				-- 	fileList = {}
-				-- 	table.insert(fileList, srcPath)
-				-- 	break
-				-- end
 				packageMap[srcPath] = package
 				table.insert(fileList, srcPath)
 			end
@@ -49,6 +42,7 @@ do
 end
 
 print("parsing...")
+path.mkdir("tmp")
 
 for i,fn in ipairs(fileList) do
 	local package = packageMap[fn]

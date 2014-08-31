@@ -16,9 +16,6 @@
 local path = require("path")
 local json = require("json")
 
-_G.QtPath = "C:\\Qt\\Qt5.1.0x86\\5.1.0\\msvc2012"
-_G.QtIncludePath = path.normjoin(QtPath, "include")
-
 local function issuperclasstemplate(superclassname)
 	local _ ,end_ = string.find(superclassname ,"<%a+>")
 	return end_ ~= nil
@@ -33,7 +30,7 @@ local function readJsonFile(path)
 	return json.decode(str)
 end
 
-_G.config = readJsonFile("config.json")
+_G.config = readJsonFile(arg[1] or "config.json")
 
 local excludeClasses = {}
 for i,v in ipairs(config.excludeClasses) do
@@ -50,8 +47,10 @@ for i,v in ipairs(config.noExtendedClass) do
 	noExtendedClass[v] = true
 end
 
-local function loadTemplate(path)
-	local fd = io.open(path)
+local rootPath = path.dirname(debug.getinfo(1, "S").source:sub(2))
+
+local function loadTemplate(fn)
+	local fd = io.open(path.join(rootPath, fn))
 	local src = fd:read("*a")
 	fd:close()
 
@@ -144,6 +143,16 @@ local function writePackageSource(packageName, classes)
 	local fd = io.open("gen/"..packageName.."/"..packageName..".cpp", "w+")
 
 	fd:write(packageTemplate({
+			packageName = packageName,
+			classes = classes
+		}))
+	fd:close()
+end
+
+local priTemplate = loadTemplate("template/package.pri")
+local function writePri(packageName, classes)
+	local fd = io.open("gen/"..packageName.."/"..packageName..".pri", "w+")
+	fd:write(priTemplate({
 			packageName = packageName,
 			classes = classes
 		}))
@@ -692,4 +701,5 @@ for k,classes in pairs(packages) do
 		-- collectgarbage()
 	end
 	writePackageSource(k, validClasses)
+	writePri(k, validClasses)
 end
