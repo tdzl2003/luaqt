@@ -47,10 +47,10 @@ Install
 
 5. Goto luaqt directory and run `msvcbuild.bat`
 
-```
-cd C:\luaqt
-msvcbuild
-```
+	```
+	cd C:\luaqt
+	msvcbuild
+	```
 
 6. Get your libraries from luaqt\bin, or add it to `PATH`
 
