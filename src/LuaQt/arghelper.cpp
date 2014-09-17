@@ -830,44 +830,86 @@ namespace LuaQt
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<QSize>::CheckArg(lua_State *L, int idx)
 	{
-		return false;
+        if (lua_istable(L, idx)){
+            return true;
+        }
+        return false;
 	}
 
 	Q_DECL_EXPORT QSize ArgHelperGeneral<QSize>::GetArg(lua_State *L, int idx)
 	{
-		luaL_error(L, "Not implemented: QSize type as return value.");
+        if (lua_istable(L, idx)){
+            int w = 0, h = 0;
+            lua_rawgeti(L, idx, 1);
+            w = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+            lua_rawgeti(L, idx, 2);
+            h = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+            return QSize(w, h);
+
+        }
 		return QSize();
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<QSize>::pushRetVal(lua_State *L, QSize const& val)
 	{
-		luaL_error(L, "Not implemented: QSize type as return value.");
+        lua_createtable(L, 2, 0);
+        lua_pushinteger(L, val.width());
+        lua_rawseti(L, -2, 1);
+        lua_pushinteger(L, val.height());
+        lua_rawseti(L, -2, 2);
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<QSize>::pushRetVal(lua_State *L, QSize&& val)
 	{
-		luaL_error(L, "Not implemented: QSize type as return value.");
-	}
+        lua_createtable(L, 2, 0);
+        lua_pushinteger(L, val.width());
+        lua_rawseti(L, -2, 1);
+        lua_pushinteger(L, val.height());
+        lua_rawseti(L, -2, 2);
+    }
 
 	Q_DECL_EXPORT bool ArgHelperGeneral<QSizeF>::CheckArg(lua_State *L, int idx)
 	{
-		return false;
+        if (lua_istable(L, idx)){
+            return true;
+        }
+        return false;
 	}
 
 	Q_DECL_EXPORT QSizeF ArgHelperGeneral<QSizeF>::GetArg(lua_State *L, int idx)
 	{
-		luaL_error(L, "Not implemented: QSizeF type as return value.");
-		return QSizeF();
+        if (lua_istable(L, idx)){
+            qreal w = 0, h = 0;
+            lua_rawgeti(L, idx, 1);
+            w = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+            lua_rawgeti(L, idx, 2);
+            h = lua_tonumber(L, -1);
+            lua_pop(L, 1);
+            return QSizeF(w, h);
+
+        }
+        return QSizeF();
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<QSizeF>::pushRetVal(lua_State *L, QSizeF const& val)
 	{
-		luaL_error(L, "Not implemented: QSizeF type as return value.");
+        lua_createtable(L, 2, 0);
+        lua_pushnumber(L, val.width());
+        lua_rawseti(L, -2, 1);
+        lua_pushnumber(L, val.height());
+        lua_rawseti(L, -2, 2);
 	}
 
 	Q_DECL_EXPORT void ArgHelperGeneral<QSizeF>::pushRetVal(lua_State *L, QSizeF&& val)
 	{
-		luaL_error(L, "Not implemented: QSizeF type as return value.");
+        lua_createtable(L, 2, 0);
+        lua_pushnumber(L, val.width());
+        lua_rawseti(L, -2, 1);
+        lua_pushnumber(L, val.height());
+        lua_rawseti(L, -2, 2);
 	}
 }
 
